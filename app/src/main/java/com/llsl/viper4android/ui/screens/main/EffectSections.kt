@@ -2,7 +2,10 @@ package com.llsl.viper4android.ui.screens.main
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +24,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.AspectRatio
 import androidx.compose.material.icons.filled.BlurCircular
 import androidx.compose.material.icons.filled.BlurOn
@@ -204,9 +209,63 @@ fun EffectSection(
                         LocalWindowInfo.current.containerSize.height
                             .toDp() / 2
                     }
-                Column(
-                    modifier = Modifier.heightIn(max = maxHeight).verticalScroll(rememberScrollState()),
-                ) { RichText(text = stringResource(descriptionRes)) }
+                val scrollState = rememberScrollState()
+                // Show bottom ↓ only when resting at the very top and there is content below
+                val showBottomArrow = scrollState.value == 0 && scrollState.maxValue > 0
+                // Show top ↑ only when resting at the very bottom and there is content above
+                val showTopArrow = scrollState.maxValue > 0 && scrollState.value == scrollState.maxValue
+                val dialogColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                Box(modifier = Modifier.heightIn(max = maxHeight)) {
+                    Column(
+                        modifier = Modifier.verticalScroll(scrollState),
+                    ) { RichText(text = stringResource(descriptionRes)) }
+                    // ↑ at top edge — user has reached the bottom, hint they can scroll back up
+                    AnimatedVisibility(
+                        visible = showTopArrow,
+                        modifier = Modifier.align(Alignment.TopCenter),
+                        enter = fadeIn(),
+                        exit = fadeOut(),
+                    ) {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(28.dp)
+                                    .background(dialogColor),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.KeyboardArrowUp,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(20.dp),
+                            )
+                        }
+                    }
+                    // ↓ at bottom edge — user is at the top, hint there is more below
+                    AnimatedVisibility(
+                        visible = showBottomArrow,
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        enter = fadeIn(),
+                        exit = fadeOut(),
+                    ) {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(28.dp)
+                                    .background(dialogColor),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.KeyboardArrowDown,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(20.dp),
+                            )
+                        }
+                    }
+                }
             },
             confirmButton = {
                 TextButton(onClick = { showHelpDialog = false }) {
