@@ -1,0 +1,24 @@
+name: ktlint
+
+on:
+  pull_request:
+    paths:
+      - "**.kt"
+      - "**.kts"
+      - ".editorconfig"
+      - ".github/workflows/ktlint.yml"
+
+jobs:
+  ktlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ktlint
+        run: |
+          curl -sSLO https://github.com/pinterest/ktlint/releases/download/1.8.0/ktlint
+          chmod +x ktlint
+          sudo mv ktlint /usr/local/bin/
+
+      - name: Run ktlint
+        run: ktlint --relative

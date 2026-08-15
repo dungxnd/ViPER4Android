@@ -41,6 +41,7 @@ fun SettingsDialog(
     onImportKernel: () -> Unit,
     onDebugUnlocked: () -> Unit,
     onImportVdc: () -> Unit,
+    onCheckUpdate: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -153,10 +154,24 @@ fun SettingsDialog(
                     }
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                SettingsInfoRow(
-                    label = stringResource(R.string.settings_app_version),
-                    value = appVersionName,
-                )
+                Row(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = onCheckUpdate)
+                            .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = stringResource(R.string.settings_app_version),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        text = appVersionName,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
         },
         confirmButton = {

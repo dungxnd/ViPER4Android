@@ -237,6 +237,19 @@
     <string name="import_success">Импорт выполнен</string>
     <string name="import_failed">Импорт неудачен</string>
 
+    <!-- Update -->
+    <string name="update_checking">Checking for updates\u2026</string>
+    <string name="update_check_failed">Update check failed: %1$s</string>
+    <string name="update_up_to_date_title">Up to date</string>
+    <string name="update_available_title">Update available</string>
+    <string name="update_new_version">New version: %1$s</string>
+    <string name="update_latest_version">Latest version: %1$s</string>
+    <string name="update_current_version">Current: %1$s</string>
+    <string name="update_download_install">Download &amp; Install</string>
+    <string name="update_view_on_github">View on GitHub</string>
+    <string name="update_downloading">Downloading\u2026 %1$d%%</string>
+    <string name="update_no_apk_asset">No APK asset in this release</string>
+
     <!-- Devices -->
     <string name="device_dialog_title">Устройства</string>
     <string name="device_type_bluetooth">Bluetooth</string>
