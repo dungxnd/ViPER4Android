@@ -30,8 +30,8 @@ android {
     }
 
     val keystoreFile = localProps.getProperty("KEYSTORE_FILE", "")
-    if (keystoreFile.isNotEmpty()) {
-        signingConfigs {
+    signingConfigs {
+        if (keystoreFile.isNotEmpty()) {
             create("release") {
                 storeFile = file(keystoreFile)
                 storePassword = localProps.getProperty("KEYSTORE_PASSWORD", "")
@@ -39,11 +39,17 @@ android {
                 keyPassword = localProps.getProperty("KEY_PASSWORD", "")
             }
         }
+        // "debug" signing config is provided automatically by AGP; no declaration needed.
     }
 
     buildTypes {
         release {
-            signingConfig = if (keystoreFile.isNotEmpty()) signingConfigs.getByName("release") else null
+            // Use production keystore when available, otherwise fall back to the
+            // debug keystore so the APK is always installable (sideload / CI).
+            signingConfig = if (keystoreFile.isNotEmpty())
+                signingConfigs.getByName("release")
+            else
+                signingConfigs.getByName("debug")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
