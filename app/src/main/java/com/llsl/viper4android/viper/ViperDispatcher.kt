@@ -19,6 +19,7 @@ object ViperDispatcher {
         val bands31: String,
     )
 
+    @Suppress("ktlint:standard:max-line-length")
     val BUILTIN_EQ_PRESETS: List<BuiltinEqPreset> =
         listOf(
             BuiltinEqPreset(

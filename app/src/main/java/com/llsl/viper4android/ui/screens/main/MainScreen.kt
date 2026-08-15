@@ -1,5 +1,6 @@
 package com.llsl.viper4android.ui.screens.main
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -46,6 +47,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -56,6 +58,7 @@ import com.llsl.viper4android.ui.screens.debug.DebugLogDialog
 import com.llsl.viper4android.ui.screens.device.DeviceDialog
 import com.llsl.viper4android.ui.screens.preset.PresetDialog
 import com.llsl.viper4android.ui.screens.settings.SettingsDialog
+import com.llsl.viper4android.ui.screens.settings.UpdateDialog
 import com.llsl.viper4android.ui.screens.status.DriverStatusDialog
 import com.llsl.viper4android.ui.theme.master_on_container_dark
 import com.llsl.viper4android.ui.theme.master_on_container_light
@@ -63,6 +66,7 @@ import com.llsl.viper4android.ui.theme.master_on_onContainer_dark
 import com.llsl.viper4android.ui.theme.master_on_onContainer_light
 import com.llsl.viper4android.ui.theme.status_active_green
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,6 +83,7 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
     val globalMode by viewModel.globalModeEnabled.collectAsStateWithLifecycle()
     val aidlMode by viewModel.aidlModeEnabled.collectAsStateWithLifecycle()
     val debugMode by viewModel.debugModeEnabled.collectAsStateWithLifecycle()
+    val updateState by viewModel.updateState.collectAsStateWithLifecycle()
 
     var showPresetDialog by remember { mutableStateOf(false) }
     var showDriverStatusDialog by remember { mutableStateOf(false) }
@@ -126,7 +131,7 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
         LaunchedEffect(Unit) {
             while (true) {
                 viewModel.queryDriverStatus()
-                delay(500)
+                delay(500.milliseconds)
             }
         }
         DriverStatusDialog(
@@ -220,7 +225,42 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
             },
             onDebugUnlocked = viewModel::enableDebugMode,
             onImportVdc = { importVdcLauncher.launch(arrayOf("*/*")) },
+            onCheckUpdate = { viewModel.checkForUpdate() },
             onDismiss = { showSettingsDialog = false },
+        )
+    }
+
+    val updateCheckingStr = stringResource(R.string.update_checking)
+    val updateNoApkStr = stringResource(R.string.update_no_apk_asset)
+    val updateCheckFailedFmt = stringResource(R.string.update_check_failed)
+    LaunchedEffect(updateState.checking) {
+        if (updateState.checking) {
+            Toast.makeText(context, updateCheckingStr, Toast.LENGTH_SHORT).show()
+        }
+    }
+    LaunchedEffect(updateState.error) {
+        val err = updateState.error
+        if (err != null) {
+            Toast.makeText(context, updateCheckFailedFmt.format(err), Toast.LENGTH_LONG).show()
+            viewModel.dismissUpdate()
+        }
+    }
+    updateState.release?.let { release ->
+        UpdateDialog(
+            release = release,
+            currentVersion = appVersionName,
+            upToDate = updateState.upToDate,
+            downloading = updateState.downloading,
+            downloadProgress = updateState.downloadProgress,
+            onDownloadInstall = {
+                viewModel.downloadAndInstall(release) {
+                    Toast.makeText(context, updateNoApkStr, Toast.LENGTH_SHORT).show()
+                }
+            },
+            onViewOnGithub = {
+                context.startActivity(Intent(Intent.ACTION_VIEW, release.htmlUrl.toUri()))
+            },
+            onDismiss = { viewModel.dismissUpdate() },
         )
     }
 
