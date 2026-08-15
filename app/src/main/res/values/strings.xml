@@ -144,7 +144,10 @@
     <string name="label_dynamic_system_side_gain_high">Side Gain High</string>
 
     <!-- Tube Simulator -->
-    <string name="section_tube_simulator">Tube Simulator (6N1J)</string>
+    <string name="section_tube_simulator">Tube Simulator</string>
+    <string name="label_tube_type">Tube Type</string>
+    <string name="label_tube_drive">Tube Drive</string>
+    <string name="label_tube_mix">Tube Mix</string>
 
     <!-- Psychoacoustic Bass -->
     <string name="section_psycho_bass">Psychoacoustic Bass</string>

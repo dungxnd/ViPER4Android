@@ -2015,6 +2015,11 @@ fun TubeSimulatorSection(
 ) {
     val vals = state.tubeSimulator
     val enabled = vals.enable
+    val model = vals.model
+    val drive = vals.drive
+    val mix = vals.mix
+
+    val tubeNames = listOf("12AX7", "6N1J")
 
     EffectSection(
         title = stringResource(R.string.section_tube_simulator),
@@ -2022,8 +2027,44 @@ fun TubeSimulatorSection(
         onEnabledChange = viewModel::setTubeSimulatorEnabled,
         descriptionRes = R.string.effect_desc_tube_simulator,
         icon = Icons.Default.MusicNote,
-        toggleOnly = true,
-    ) {}
+    ) {
+        LabeledDropdown(
+            label = stringResource(R.string.label_tube_type),
+            selectedValue = tubeNames.getOrElse(model) { tubeNames[0] },
+            options = tubeNames,
+            onOptionSelected = { index, _ -> viewModel.applyPref(Effects.tubeSimulator.model, index) },
+        )
+        LabeledSlider(
+            label = stringResource(R.string.label_tube_drive),
+            value = drive.toFloat(),
+            onValueChange = { viewModel.applyPref(Effects.tubeSimulator.drive, it.roundToInt()) },
+            valueRange = 100f..1000f,
+            valueLabel = "${"%.1f".format(drive / 100.0)}",
+            edit =
+                SliderEdit(
+                    displayValue = drive / 100.0,
+                    displayRange = 1.0..10.0,
+                    decimals = 1,
+                    unit = "",
+                    onCommit = { viewModel.applyPref(Effects.tubeSimulator.drive, (it * 100).roundToInt().coerceIn(100, 1000)) },
+                ),
+        )
+        LabeledSlider(
+            label = stringResource(R.string.label_tube_mix),
+            value = mix.toFloat(),
+            onValueChange = { viewModel.applyPref(Effects.tubeSimulator.mix, it.roundToInt()) },
+            valueRange = 0f..100f,
+            valueLabel = "$mix%",
+            edit =
+                SliderEdit(
+                    displayValue = mix.toDouble(),
+                    displayRange = 0.0..100.0,
+                    decimals = 0,
+                    unit = "%",
+                    onCommit = { viewModel.applyPref(Effects.tubeSimulator.mix, it.roundToInt().coerceIn(0, 100)) },
+                ),
+        )
+    }
 }
 
 @Composable

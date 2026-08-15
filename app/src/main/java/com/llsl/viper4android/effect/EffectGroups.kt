@@ -1241,6 +1241,30 @@ class TubeSimulatorEffect : EffectGroupBuilder("tubeSimulator") {
             { it.tubeSimulator.enable },
             { copy(tubeSimulator = tubeSimulator.copy(enable = it)) },
         )
+    val model =
+        int(
+            ViperParams.PARAM_TUBE_SIMULATOR_MODEL,
+            "model",
+            0,
+            { it.tubeSimulator.model },
+            { copy(tubeSimulator = tubeSimulator.copy(model = it)) },
+        )
+    val drive =
+        int(
+            ViperParams.PARAM_TUBE_SIMULATOR_DRIVE,
+            "drive",
+            200,
+            { it.tubeSimulator.drive },
+            { copy(tubeSimulator = tubeSimulator.copy(drive = it)) },
+        )
+    val mix =
+        int(
+            ViperParams.PARAM_TUBE_SIMULATOR_MIX,
+            "mix",
+            30,
+            { it.tubeSimulator.mix },
+            { copy(tubeSimulator = tubeSimulator.copy(mix = it)) },
+        )
 }
 
 class AnalogXEffect : EffectGroupBuilder("analogX") {
