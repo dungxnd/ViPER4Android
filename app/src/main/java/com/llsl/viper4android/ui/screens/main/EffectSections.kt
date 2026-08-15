@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -71,6 +72,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
@@ -99,6 +101,33 @@ import kotlin.math.roundToInt
 private fun rawToDb(raw: Number): Double = 20.0 * log10(raw.toDouble() / 100.0)
 
 private fun dbToRaw(db: Double): Int = (10.0.pow(db / 20.0) * 100.0).roundToInt()
+
+@Composable
+private fun BoxScope.ScrollArrowHint(
+    visible: Boolean,
+    alignment: Alignment,
+    icon: ImageVector,
+    color: Color,
+) {
+    AnimatedVisibility(
+        visible = visible,
+        modifier = Modifier.align(alignment),
+        enter = fadeIn(),
+        exit = fadeOut(),
+    ) {
+        Box(
+            modifier = Modifier.fillMaxWidth().height(28.dp).background(color),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(20.dp),
+            )
+        }
+    }
+}
 
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
@@ -219,52 +248,8 @@ fun EffectSection(
                     Column(
                         modifier = Modifier.verticalScroll(scrollState),
                     ) { RichText(text = stringResource(descriptionRes)) }
-                    // ↑ at top edge — user has reached the bottom, hint they can scroll back up
-                    AnimatedVisibility(
-                        visible = showTopArrow,
-                        modifier = Modifier.align(Alignment.TopCenter),
-                        enter = fadeIn(),
-                        exit = fadeOut(),
-                    ) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(28.dp)
-                                    .background(dialogColor),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.KeyboardArrowUp,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(20.dp),
-                            )
-                        }
-                    }
-                    // ↓ at bottom edge — user is at the top, hint there is more below
-                    AnimatedVisibility(
-                        visible = showBottomArrow,
-                        modifier = Modifier.align(Alignment.BottomCenter),
-                        enter = fadeIn(),
-                        exit = fadeOut(),
-                    ) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(28.dp)
-                                    .background(dialogColor),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.KeyboardArrowDown,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(20.dp),
-                            )
-                        }
-                    }
+                    ScrollArrowHint(showTopArrow, Alignment.TopCenter, Icons.Default.KeyboardArrowUp, dialogColor)
+                    ScrollArrowHint(showBottomArrow, Alignment.BottomCenter, Icons.Default.KeyboardArrowDown, dialogColor)
                 }
             },
             confirmButton = {
