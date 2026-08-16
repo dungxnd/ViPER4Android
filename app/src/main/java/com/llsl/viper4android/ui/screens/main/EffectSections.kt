@@ -2019,7 +2019,7 @@ fun TubeSimulatorSection(
     val drive = vals.drive
     val mix = vals.mix
 
-    val tubeNames = listOf("12AX7", "6N1P", "12AU7")
+    val tubeNames = listOf("12AX7", "6N1P", "12AU7", "12AT7")
 
     EffectSection(
         title = stringResource(R.string.section_tube_simulator),
