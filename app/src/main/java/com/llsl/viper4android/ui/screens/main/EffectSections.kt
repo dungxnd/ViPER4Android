@@ -21,6 +21,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.AspectRatio
 import androidx.compose.material.icons.filled.BlurCircular
 import androidx.compose.material.icons.filled.BlurOn
@@ -84,6 +86,7 @@ import com.llsl.viper4android.ui.components.LabeledDropdown
 import com.llsl.viper4android.ui.components.LabeledSlider
 import com.llsl.viper4android.ui.components.LabeledSwitch
 import com.llsl.viper4android.ui.components.RichText
+import com.llsl.viper4android.ui.components.ScrollArrowHint
 import com.llsl.viper4android.ui.components.SliderEdit
 import com.llsl.viper4android.ui.components.resolvePresetName
 import java.util.Locale
@@ -204,9 +207,19 @@ fun EffectSection(
                         LocalWindowInfo.current.containerSize.height
                             .toDp() / 2
                     }
-                Column(
-                    modifier = Modifier.heightIn(max = maxHeight).verticalScroll(rememberScrollState()),
-                ) { RichText(text = stringResource(descriptionRes)) }
+                val scrollState = rememberScrollState()
+                // Show bottom ↓ only when resting at the very top and there is content below
+                val showBottomArrow = !scrollState.isScrollInProgress && scrollState.value == 0 && scrollState.maxValue > 0
+                // Show top ↑ only when resting at the very bottom and there is content above
+                val showTopArrow = !scrollState.isScrollInProgress && scrollState.maxValue > 0 && scrollState.value == scrollState.maxValue
+                val dialogColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                Box(modifier = Modifier.heightIn(max = maxHeight)) {
+                    Column(
+                        modifier = Modifier.verticalScroll(scrollState),
+                    ) { RichText(text = stringResource(descriptionRes)) }
+                    ScrollArrowHint(showTopArrow, Alignment.TopCenter, Icons.Default.KeyboardArrowUp, dialogColor)
+                    ScrollArrowHint(showBottomArrow, Alignment.BottomCenter, Icons.Default.KeyboardArrowDown, dialogColor)
+                }
             },
             confirmButton = {
                 TextButton(onClick = { showHelpDialog = false }) {

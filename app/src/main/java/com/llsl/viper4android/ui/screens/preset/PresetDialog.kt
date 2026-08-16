@@ -2,6 +2,7 @@ package com.llsl.viper4android.ui.screens.preset
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,9 +10,12 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -35,6 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.llsl.viper4android.R
 import com.llsl.viper4android.data.model.Preset
+import com.llsl.viper4android.ui.components.ScrollArrowHint
 
 @Composable
 fun PresetDialog(
@@ -263,31 +268,37 @@ fun PresetDialog(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 } else {
-                    LazyColumn(
-                        modifier = Modifier.heightIn(max = 300.dp),
-                    ) {
-                        items(presets, key = { it.id }) { preset ->
-                            PresetItem(
-                                preset = preset,
-                                onLoad = {
-                                    loadTargetPreset = preset
-                                    showLoadConfirm = true
-                                },
-                                onDelete = {
-                                    deleteTargetPreset = preset
-                                    showDeleteConfirm = true
-                                },
-                                onRename = {
-                                    renameInputName = preset.name
-                                    renamingId = preset.id
-                                },
-                                onUpdate = {
-                                    updateTargetPreset = preset
-                                    showUpdateConfirm = true
-                                },
-                            )
-                            HorizontalDivider()
+                    val listState = rememberLazyListState()
+                    val showBottomArrow = !listState.isScrollInProgress && !listState.canScrollBackward && listState.canScrollForward
+                    val showTopArrow = !listState.isScrollInProgress && listState.canScrollBackward && !listState.canScrollForward
+                    val arrowColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                    Box(modifier = Modifier.heightIn(max = 300.dp)) {
+                        LazyColumn(state = listState) {
+                            items(presets, key = { it.id }) { preset ->
+                                PresetItem(
+                                    preset = preset,
+                                    onLoad = {
+                                        loadTargetPreset = preset
+                                        showLoadConfirm = true
+                                    },
+                                    onDelete = {
+                                        deleteTargetPreset = preset
+                                        showDeleteConfirm = true
+                                    },
+                                    onRename = {
+                                        renameInputName = preset.name
+                                        renamingId = preset.id
+                                    },
+                                    onUpdate = {
+                                        updateTargetPreset = preset
+                                        showUpdateConfirm = true
+                                    },
+                                )
+                                HorizontalDivider()
+                            }
                         }
+                        ScrollArrowHint(showTopArrow, Alignment.TopCenter, Icons.Default.KeyboardArrowUp, arrowColor)
+                        ScrollArrowHint(showBottomArrow, Alignment.BottomCenter, Icons.Default.KeyboardArrowDown, arrowColor)
                     }
                 }
             }
