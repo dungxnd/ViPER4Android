@@ -1,4 +1,4 @@
-package com.llsl.viper4android.data.model
+package com.dxnd.viper4android.data.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

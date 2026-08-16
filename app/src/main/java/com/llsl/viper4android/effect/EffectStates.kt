@@ -1,7 +1,7 @@
-package com.llsl.viper4android.effect
+package com.dxnd.viper4android.effect
 
-import com.llsl.viper4android.data.model.DsPreset
-import com.llsl.viper4android.data.model.EqPreset
+import com.dxnd.viper4android.data.model.DsPreset
+import com.dxnd.viper4android.data.model.EqPreset
 
 data class OutputState(
     val volume: Int = 100,

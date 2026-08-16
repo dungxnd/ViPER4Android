@@ -1,17 +1,17 @@
-package com.llsl.viper4android.data.db
+package com.dxnd.viper4android.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.llsl.viper4android.data.dao.DeviceSettingsDao
-import com.llsl.viper4android.data.dao.DsPresetDao
-import com.llsl.viper4android.data.dao.EqPresetDao
-import com.llsl.viper4android.data.dao.PresetDao
-import com.llsl.viper4android.data.model.DeviceSettings
-import com.llsl.viper4android.data.model.DsPreset
-import com.llsl.viper4android.data.model.EqPreset
-import com.llsl.viper4android.data.model.Preset
+import com.dxnd.viper4android.data.dao.DeviceSettingsDao
+import com.dxnd.viper4android.data.dao.DsPresetDao
+import com.dxnd.viper4android.data.dao.EqPresetDao
+import com.dxnd.viper4android.data.dao.PresetDao
+import com.dxnd.viper4android.data.model.DeviceSettings
+import com.dxnd.viper4android.data.model.DsPreset
+import com.dxnd.viper4android.data.model.EqPreset
+import com.dxnd.viper4android.data.model.Preset
 
 @Database(
     entities = [Preset::class, EqPreset::class, DsPreset::class, DeviceSettings::class],

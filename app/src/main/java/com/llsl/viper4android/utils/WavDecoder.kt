@@ -1,4 +1,4 @@
-package com.llsl.viper4android.utils
+package com.dxnd.viper4android.utils
 
 import java.io.InputStream
 import java.nio.ByteBuffer

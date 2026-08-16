@@ -1,4 +1,4 @@
-package com.llsl.viper4android.ui.components
+package com.dxnd.viper4android.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

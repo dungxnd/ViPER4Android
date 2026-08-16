@@ -14,15 +14,15 @@ val localProps =
     }
 
 android {
-    namespace = "com.llsl.viper4android"
+    namespace = "com.dxnd.viper4android"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.llsl.viper4android"
+        applicationId = "com.dxnd.viper4android"
         minSdk = 28
         targetSdk = 37
         versionCode = 1
-        versionName = "2.0.4"
+        versionName = "2.1.0"
     }
 
     androidResources {

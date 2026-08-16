@@ -1,4 +1,4 @@
-package com.llsl.viper4android.ui.screens.main
+package com.dxnd.viper4android.ui.screens.main
 
 import android.content.Intent
 import android.widget.Toast
@@ -52,19 +52,19 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.llsl.viper4android.R
-import com.llsl.viper4android.effect.EffectState
-import com.llsl.viper4android.ui.screens.debug.DebugLogDialog
-import com.llsl.viper4android.ui.screens.device.DeviceDialog
-import com.llsl.viper4android.ui.screens.preset.PresetDialog
-import com.llsl.viper4android.ui.screens.settings.SettingsDialog
-import com.llsl.viper4android.ui.screens.settings.UpdateDialog
-import com.llsl.viper4android.ui.screens.status.DriverStatusDialog
-import com.llsl.viper4android.ui.theme.master_on_container_dark
-import com.llsl.viper4android.ui.theme.master_on_container_light
-import com.llsl.viper4android.ui.theme.master_on_onContainer_dark
-import com.llsl.viper4android.ui.theme.master_on_onContainer_light
-import com.llsl.viper4android.ui.theme.status_active_green
+import com.dxnd.viper4android.R
+import com.dxnd.viper4android.effect.EffectState
+import com.dxnd.viper4android.ui.screens.debug.DebugLogDialog
+import com.dxnd.viper4android.ui.screens.device.DeviceDialog
+import com.dxnd.viper4android.ui.screens.preset.PresetDialog
+import com.dxnd.viper4android.ui.screens.settings.SettingsDialog
+import com.dxnd.viper4android.ui.screens.settings.UpdateDialog
+import com.dxnd.viper4android.ui.screens.status.DriverStatusDialog
+import com.dxnd.viper4android.ui.theme.master_on_container_dark
+import com.dxnd.viper4android.ui.theme.master_on_container_light
+import com.dxnd.viper4android.ui.theme.master_on_onContainer_dark
+import com.dxnd.viper4android.ui.theme.master_on_onContainer_light
+import com.dxnd.viper4android.ui.theme.status_active_green
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 

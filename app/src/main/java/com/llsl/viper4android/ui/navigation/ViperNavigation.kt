@@ -1,10 +1,10 @@
-package com.llsl.viper4android.ui.navigation
+package com.dxnd.viper4android.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.llsl.viper4android.ui.screens.main.MainScreen
+import com.dxnd.viper4android.ui.screens.main.MainScreen
 
 @Composable
 fun ViperNavigation() {

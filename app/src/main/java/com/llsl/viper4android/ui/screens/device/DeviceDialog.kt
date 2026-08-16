@@ -1,4 +1,4 @@
-package com.llsl.viper4android.ui.screens.device
+package com.dxnd.viper4android.ui.screens.device
 
 import android.text.format.DateUtils
 import androidx.compose.foundation.Canvas
@@ -45,9 +45,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.llsl.viper4android.R
-import com.llsl.viper4android.data.model.DeviceSettings
-import com.llsl.viper4android.ui.theme.status_active_green
+import com.dxnd.viper4android.R
+import com.dxnd.viper4android.data.model.DeviceSettings
+import com.dxnd.viper4android.ui.theme.status_active_green
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

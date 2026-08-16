@@ -1,7 +1,7 @@
-package com.llsl.viper4android.effect
+package com.dxnd.viper4android.effect
 
-import com.llsl.viper4android.data.repository.ViperRepository
-import com.llsl.viper4android.viper.ViperParams
+import com.dxnd.viper4android.data.repository.ViperRepository
+import com.dxnd.viper4android.viper.ViperParams
 
 data class EffectGroup(
     val effectKey: String,

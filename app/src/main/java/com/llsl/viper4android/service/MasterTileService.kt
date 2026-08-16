@@ -1,8 +1,8 @@
-package com.llsl.viper4android.service
+package com.dxnd.viper4android.service
 
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import com.llsl.viper4android.data.repository.ViperRepository
+import com.dxnd.viper4android.data.repository.ViperRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

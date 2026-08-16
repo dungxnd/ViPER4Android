@@ -39,7 +39,7 @@ body:
     attributes:
       label: App logs
       description: |
-        Upload the log file under `/data/data/com.llsl.viper4android/files/Log/viper.log`.
+        Upload the log file under `/data/data/com.dxnd.viper4android/files/Log/viper.log`.
     validations:
       required: true
 
@@ -48,7 +48,7 @@ body:
     attributes:
       label: Effect settings
       description: |
-        Upload the JSON preset file under `/sdcard/Android/data/com.llsl.viper4android/files/Preset/*.json` that you are using while reproducing this bug.
+        Upload the JSON preset file under `/sdcard/Android/data/com.dxnd.viper4android/files/Preset/*.json` that you are using while reproducing this bug.
     validations:
       required: true
 

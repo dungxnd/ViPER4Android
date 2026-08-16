@@ -1,4 +1,4 @@
-package com.llsl.viper4android.service
+package com.dxnd.viper4android.service
 
 import android.app.Notification
 import android.app.PendingIntent
@@ -11,23 +11,23 @@ import androidx.core.app.NotificationCompat
 import androidx.core.util.size
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import com.llsl.viper4android.R
-import com.llsl.viper4android.SERVICE_CHANNEL_ID
-import com.llsl.viper4android.audio.AudioDevice
-import com.llsl.viper4android.audio.AudioOutputDetector
-import com.llsl.viper4android.audio.AudioSessionMonitor
-import com.llsl.viper4android.data.model.DeviceSettings
-import com.llsl.viper4android.data.repository.ViperRepository
-import com.llsl.viper4android.effect.EffectState
-import com.llsl.viper4android.effect.deserializeEffectPrefs
-import com.llsl.viper4android.effect.serializeEffectPrefs
-import com.llsl.viper4android.utils.FileLogger
-import com.llsl.viper4android.utils.RootShell
-import com.llsl.viper4android.utils.WavDecoder
-import com.llsl.viper4android.viper.ConfigChannel
-import com.llsl.viper4android.viper.ViperDispatcher
-import com.llsl.viper4android.viper.ViperEffect
-import com.llsl.viper4android.viper.ViperParams
+import com.dxnd.viper4android.R
+import com.dxnd.viper4android.SERVICE_CHANNEL_ID
+import com.dxnd.viper4android.audio.AudioDevice
+import com.dxnd.viper4android.audio.AudioOutputDetector
+import com.dxnd.viper4android.audio.AudioSessionMonitor
+import com.dxnd.viper4android.data.model.DeviceSettings
+import com.dxnd.viper4android.data.repository.ViperRepository
+import com.dxnd.viper4android.effect.EffectState
+import com.dxnd.viper4android.effect.deserializeEffectPrefs
+import com.dxnd.viper4android.effect.serializeEffectPrefs
+import com.dxnd.viper4android.utils.FileLogger
+import com.dxnd.viper4android.utils.RootShell
+import com.dxnd.viper4android.utils.WavDecoder
+import com.dxnd.viper4android.viper.ConfigChannel
+import com.dxnd.viper4android.viper.ViperDispatcher
+import com.dxnd.viper4android.viper.ViperEffect
+import com.dxnd.viper4android.viper.ViperParams
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -46,10 +46,10 @@ class ViperService : LifecycleService() {
     companion object {
         private const val NOTIFICATION_ID = 1
 
-        const val ACTION_START = "com.llsl.viper4android.service.START"
-        const val ACTION_STOP = "com.llsl.viper4android.service.STOP"
-        const val ACTION_TOGGLE_MASTER = "com.llsl.viper4android.service.TOGGLE_MASTER"
-        const val EXTRA_MASTER_ENABLED = "com.llsl.viper4android.service.EXTRA_MASTER_ENABLED"
+        const val ACTION_START = "com.dxnd.viper4android.service.START"
+        const val ACTION_STOP = "com.dxnd.viper4android.service.STOP"
+        const val ACTION_TOGGLE_MASTER = "com.dxnd.viper4android.service.TOGGLE_MASTER"
+        const val EXTRA_MASTER_ENABLED = "com.dxnd.viper4android.service.EXTRA_MASTER_ENABLED"
 
         fun startService(context: Context) {
             val intent =

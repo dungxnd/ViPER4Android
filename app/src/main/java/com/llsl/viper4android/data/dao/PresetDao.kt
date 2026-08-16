@@ -1,4 +1,4 @@
-package com.llsl.viper4android.data.dao
+package com.dxnd.viper4android.data.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.llsl.viper4android.data.model.Preset
+import com.dxnd.viper4android.data.model.Preset
 import kotlinx.coroutines.flow.Flow
 
 @Dao

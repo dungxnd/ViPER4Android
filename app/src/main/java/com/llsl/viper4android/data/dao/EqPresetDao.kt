@@ -1,10 +1,10 @@
-package com.llsl.viper4android.data.dao
+package com.dxnd.viper4android.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.llsl.viper4android.data.model.EqPreset
+import com.dxnd.viper4android.data.model.EqPreset
 import kotlinx.coroutines.flow.Flow
 
 @Dao

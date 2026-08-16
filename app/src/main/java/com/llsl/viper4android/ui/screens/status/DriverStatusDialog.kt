@@ -1,4 +1,4 @@
-package com.llsl.viper4android.ui.screens.status
+package com.dxnd.viper4android.ui.screens.status
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,8 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.llsl.viper4android.R
-import com.llsl.viper4android.ui.screens.main.DriverStatus
+import com.dxnd.viper4android.R
+import com.dxnd.viper4android.ui.screens.main.DriverStatus
 
 @Composable
 fun DriverStatusDialog(

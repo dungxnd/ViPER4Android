@@ -1,4 +1,4 @@
-package com.llsl.viper4android.ui.theme
+package com.dxnd.viper4android.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

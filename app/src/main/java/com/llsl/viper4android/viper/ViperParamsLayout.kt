@@ -6,7 +6,7 @@
 // ConfigChannel.kt. Field offsets are derived from the same C++
 // header the AIDL HAL consumer compiles against — Kotlin and C++
 // cannot disagree on struct shape.
-package com.llsl.viper4android.viper
+package com.dxnd.viper4android.viper
 
 object ViperParamsLayout {
     // Root struct: viper::ViPERParams

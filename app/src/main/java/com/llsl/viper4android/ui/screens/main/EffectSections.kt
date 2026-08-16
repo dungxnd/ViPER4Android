@@ -1,4 +1,4 @@
-package com.llsl.viper4android.ui.screens.main
+package com.dxnd.viper4android.ui.screens.main
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -75,17 +75,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.llsl.viper4android.R
-import com.llsl.viper4android.effect.EffectState
-import com.llsl.viper4android.effect.Effects
-import com.llsl.viper4android.ui.components.EqCurveGraph
-import com.llsl.viper4android.ui.components.EqEditDialog
-import com.llsl.viper4android.ui.components.LabeledDropdown
-import com.llsl.viper4android.ui.components.LabeledSlider
-import com.llsl.viper4android.ui.components.LabeledSwitch
-import com.llsl.viper4android.ui.components.RichText
-import com.llsl.viper4android.ui.components.SliderEdit
-import com.llsl.viper4android.ui.components.resolvePresetName
+import com.dxnd.viper4android.R
+import com.dxnd.viper4android.effect.EffectState
+import com.dxnd.viper4android.effect.Effects
+import com.dxnd.viper4android.ui.components.EqCurveGraph
+import com.dxnd.viper4android.ui.components.EqEditDialog
+import com.dxnd.viper4android.ui.components.LabeledDropdown
+import com.dxnd.viper4android.ui.components.LabeledSlider
+import com.dxnd.viper4android.ui.components.LabeledSwitch
+import com.dxnd.viper4android.ui.components.RichText
+import com.dxnd.viper4android.ui.components.SliderEdit
+import com.dxnd.viper4android.ui.components.resolvePresetName
 import java.util.Locale
 import kotlin.math.log10
 import kotlin.math.pow

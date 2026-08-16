@@ -1,4 +1,4 @@
-package com.llsl.viper4android.audio
+package com.dxnd.viper4android.audio
 
 import android.content.Context
 import android.media.AudioAttributes
@@ -8,7 +8,7 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import com.llsl.viper4android.utils.FileLogger
+import com.dxnd.viper4android.utils.FileLogger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

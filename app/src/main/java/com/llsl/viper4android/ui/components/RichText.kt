@@ -1,4 +1,4 @@
-package com.llsl.viper4android.ui.components
+package com.dxnd.viper4android.ui.components
 
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text

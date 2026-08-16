@@ -1,10 +1,10 @@
-package com.llsl.viper4android.ui.components
+package com.dxnd.viper4android.ui.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.llsl.viper4android.data.model.DsPreset
-import com.llsl.viper4android.data.model.EqPreset
-import com.llsl.viper4android.viper.ViperDispatcher
+import com.dxnd.viper4android.data.model.DsPreset
+import com.dxnd.viper4android.data.model.EqPreset
+import com.dxnd.viper4android.viper.ViperDispatcher
 
 @Composable
 fun resolvePresetName(preset: EqPreset): String {

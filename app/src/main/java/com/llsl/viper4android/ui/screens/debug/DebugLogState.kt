@@ -1,4 +1,4 @@
-package com.llsl.viper4android.ui.screens.debug
+package com.dxnd.viper4android.ui.screens.debug
 
 import android.util.Log
 import androidx.compose.runtime.Stable
@@ -8,8 +8,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.llsl.viper4android.utils.FileLogger
-import com.llsl.viper4android.utils.RootShell
+import com.dxnd.viper4android.utils.FileLogger
+import com.dxnd.viper4android.utils.RootShell
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

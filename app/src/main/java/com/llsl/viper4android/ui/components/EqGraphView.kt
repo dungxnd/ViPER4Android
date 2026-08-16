@@ -1,4 +1,4 @@
-package com.llsl.viper4android.ui.components
+package com.dxnd.viper4android.ui.components
 
 import android.graphics.Color.argb
 import android.graphics.Paint
@@ -49,9 +49,9 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.llsl.viper4android.R
-import com.llsl.viper4android.data.model.EqPreset
-import com.llsl.viper4android.viper.ViperDispatcher
+import com.dxnd.viper4android.R
+import com.dxnd.viper4android.data.model.EqPreset
+import com.dxnd.viper4android.viper.ViperDispatcher
 import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min

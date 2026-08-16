@@ -1,4 +1,4 @@
-package com.llsl.viper4android.audio
+package com.dxnd.viper4android.audio
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -6,8 +6,8 @@ import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
 import android.os.Looper
-import com.llsl.viper4android.utils.FileLogger
-import com.llsl.viper4android.utils.RootShell
+import com.dxnd.viper4android.utils.FileLogger
+import com.dxnd.viper4android.utils.RootShell
 
 class AudioSessionMonitor(
     private val context: Context,

@@ -1,4 +1,4 @@
-package com.llsl.viper4android.di
+package com.dxnd.viper4android.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -7,14 +7,14 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.llsl.viper4android.data.dao.DeviceSettingsDao
-import com.llsl.viper4android.data.dao.DsPresetDao
-import com.llsl.viper4android.data.dao.EqPresetDao
-import com.llsl.viper4android.data.dao.PresetDao
-import com.llsl.viper4android.data.db.ViperDatabase
-import com.llsl.viper4android.data.model.DsPreset
-import com.llsl.viper4android.data.model.EqPreset
-import com.llsl.viper4android.viper.ViperDispatcher
+import com.dxnd.viper4android.data.dao.DeviceSettingsDao
+import com.dxnd.viper4android.data.dao.DsPresetDao
+import com.dxnd.viper4android.data.dao.EqPresetDao
+import com.dxnd.viper4android.data.dao.PresetDao
+import com.dxnd.viper4android.data.db.ViperDatabase
+import com.dxnd.viper4android.data.model.DsPreset
+import com.dxnd.viper4android.data.model.EqPreset
+import com.dxnd.viper4android.viper.ViperDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

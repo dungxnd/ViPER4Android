@@ -1,11 +1,11 @@
-package com.llsl.viper4android.receiver
+package com.dxnd.viper4android.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.llsl.viper4android.data.repository.ViperRepository
-import com.llsl.viper4android.service.ViperService
-import com.llsl.viper4android.utils.FileLogger
+import com.dxnd.viper4android.data.repository.ViperRepository
+import com.dxnd.viper4android.service.ViperService
+import com.dxnd.viper4android.utils.FileLogger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking

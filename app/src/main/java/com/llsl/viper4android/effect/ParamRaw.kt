@@ -1,4 +1,4 @@
-package com.llsl.viper4android.effect
+package com.dxnd.viper4android.effect
 
 import kotlin.math.ln
 import kotlin.math.roundToInt

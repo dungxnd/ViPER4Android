@@ -1,11 +1,11 @@
-package com.llsl.viper4android.viper
+package com.dxnd.viper4android.viper
 
-import com.llsl.viper4android.R
-import com.llsl.viper4android.data.repository.ViperRepository
-import com.llsl.viper4android.effect.EffectState
-import com.llsl.viper4android.effect.ParamRaw
-import com.llsl.viper4android.effect.loadEffectPrefs
-import com.llsl.viper4android.utils.FileLogger
+import com.dxnd.viper4android.R
+import com.dxnd.viper4android.data.repository.ViperRepository
+import com.dxnd.viper4android.effect.EffectState
+import com.dxnd.viper4android.effect.ParamRaw
+import com.dxnd.viper4android.effect.loadEffectPrefs
+import com.dxnd.viper4android.utils.FileLogger
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 

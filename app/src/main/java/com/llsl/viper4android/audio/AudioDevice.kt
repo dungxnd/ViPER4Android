@@ -1,4 +1,4 @@
-package com.llsl.viper4android.audio
+package com.dxnd.viper4android.audio
 
 data class AudioDevice(
     val id: String,

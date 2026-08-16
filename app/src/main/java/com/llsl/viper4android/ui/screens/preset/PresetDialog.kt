@@ -1,4 +1,4 @@
-package com.llsl.viper4android.ui.screens.preset
+package com.dxnd.viper4android.ui.screens.preset
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,8 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.llsl.viper4android.R
-import com.llsl.viper4android.data.model.Preset
+import com.dxnd.viper4android.R
+import com.dxnd.viper4android.data.model.Preset
 
 @Composable
 fun PresetDialog(

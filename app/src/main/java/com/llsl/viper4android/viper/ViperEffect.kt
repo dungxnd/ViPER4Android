@@ -1,7 +1,7 @@
-package com.llsl.viper4android.viper
+package com.dxnd.viper4android.viper
 
 import android.media.audiofx.AudioEffect
-import com.llsl.viper4android.utils.FileLogger
+import com.dxnd.viper4android.utils.FileLogger
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 import java.nio.ByteBuffer

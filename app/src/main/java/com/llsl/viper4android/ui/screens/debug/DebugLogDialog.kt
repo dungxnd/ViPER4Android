@@ -1,4 +1,4 @@
-package com.llsl.viper4android.ui.screens.debug
+package com.dxnd.viper4android.ui.screens.debug
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -38,14 +38,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.llsl.viper4android.R
-import com.llsl.viper4android.ui.theme.log_level_debug
-import com.llsl.viper4android.ui.theme.log_level_error
-import com.llsl.viper4android.ui.theme.log_level_info
-import com.llsl.viper4android.ui.theme.log_level_unspecified
-import com.llsl.viper4android.ui.theme.log_level_warn
-import com.llsl.viper4android.ui.theme.log_source_app
-import com.llsl.viper4android.ui.theme.log_source_driver
+import com.dxnd.viper4android.R
+import com.dxnd.viper4android.ui.theme.log_level_debug
+import com.dxnd.viper4android.ui.theme.log_level_error
+import com.dxnd.viper4android.ui.theme.log_level_info
+import com.dxnd.viper4android.ui.theme.log_level_unspecified
+import com.dxnd.viper4android.ui.theme.log_level_warn
+import com.dxnd.viper4android.ui.theme.log_source_app
+import com.dxnd.viper4android.ui.theme.log_source_driver
 
 private enum class SourceFilter { ALL, APP, DRIVER }
 

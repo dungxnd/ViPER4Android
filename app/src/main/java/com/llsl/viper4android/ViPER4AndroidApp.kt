@@ -1,10 +1,10 @@
-package com.llsl.viper4android
+package com.dxnd.viper4android
 
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.util.Property
-import com.llsl.viper4android.utils.FileLogger
+import com.dxnd.viper4android.utils.FileLogger
 import dagger.hilt.android.HiltAndroidApp
 import java.lang.reflect.Method
 

@@ -1,8 +1,8 @@
-package com.llsl.viper4android.viper
+package com.dxnd.viper4android.viper
 
-import com.llsl.viper4android.effect.EffectState
-import com.llsl.viper4android.utils.FileLogger
-import com.llsl.viper4android.utils.RootShell
+import com.dxnd.viper4android.effect.EffectState
+import com.dxnd.viper4android.utils.FileLogger
+import com.dxnd.viper4android.utils.RootShell
 import java.io.File
 import java.io.RandomAccessFile
 import java.lang.invoke.VarHandle

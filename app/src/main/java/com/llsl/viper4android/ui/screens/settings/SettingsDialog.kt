@@ -1,4 +1,4 @@
-package com.llsl.viper4android.ui.screens.settings
+package com.dxnd.viper4android.ui.screens.settings
 
 import android.widget.Toast
 import androidx.compose.foundation.Canvas
@@ -24,9 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.llsl.viper4android.R
-import com.llsl.viper4android.ui.screens.main.DriverStatus
-import com.llsl.viper4android.ui.theme.status_active_green
+import com.dxnd.viper4android.R
+import com.dxnd.viper4android.ui.screens.main.DriverStatus
+import com.dxnd.viper4android.ui.theme.status_active_green
 
 @Composable
 fun SettingsDialog(

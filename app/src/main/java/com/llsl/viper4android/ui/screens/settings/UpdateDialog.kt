@@ -1,4 +1,4 @@
-package com.llsl.viper4android.ui.screens.settings
+package com.dxnd.viper4android.ui.screens.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,13 +30,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.llsl.viper4android.R
-import com.llsl.viper4android.ui.theme.md_alert_caution
-import com.llsl.viper4android.ui.theme.md_alert_important
-import com.llsl.viper4android.ui.theme.md_alert_note
-import com.llsl.viper4android.ui.theme.md_alert_tip
-import com.llsl.viper4android.ui.theme.md_alert_warning
-import com.llsl.viper4android.utils.ReleaseInfo
+import com.dxnd.viper4android.R
+import com.dxnd.viper4android.ui.theme.md_alert_caution
+import com.dxnd.viper4android.ui.theme.md_alert_important
+import com.dxnd.viper4android.ui.theme.md_alert_note
+import com.dxnd.viper4android.ui.theme.md_alert_tip
+import com.dxnd.viper4android.ui.theme.md_alert_warning
+import com.dxnd.viper4android.utils.ReleaseInfo
 
 @Composable
 fun UpdateDialog(

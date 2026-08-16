@@ -1,4 +1,4 @@
-package com.llsl.viper4android.ui.screens.debug
+package com.dxnd.viper4android.ui.screens.debug
 
 internal enum class LogSource {
     APP,
