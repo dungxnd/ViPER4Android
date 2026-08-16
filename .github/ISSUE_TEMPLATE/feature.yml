@@ -8,7 +8,7 @@ body:
       label: Prerequisites
       options:
         - label: |
-            I have searched [existing issues](https://github.com/likelikeslike/ViPER4Android/issues?q=is%3Aissue) (both open and closed) and found no duplicate.
+            I have searched [existing issues](https://github.com/dungxnd/ViPER4Android/issues?q=is%3Aissue) (both open and closed) and found no duplicate.
           required: true
         - label: |
             I am using the latest release of the App and driver.
