@@ -144,7 +144,11 @@
     <string name="label_dynamic_system_side_gain_high">高频侧边增益</string>
 
     <!-- Tube Simulator -->
-    <string name="section_tube_simulator">电子管模拟器 (6N1J)</string>
+    <string name="section_tube_simulator">电子管模拟器</string>
+    <string name="label_tube_type">电子管类型</string>
+    <string name="label_tube_drive">驱动</string>
+    <string name="label_tube_mix">混合</string>
+    <string name="label_tube_hpf_cutoff">高通截止频率</string>
 
     <!-- Psychoacoustic Bass -->
     <string name="section_psycho_bass">虚拟低音</string>

@@ -144,7 +144,11 @@
     <string name="label_dynamic_system_side_gain_high">Усиление боковых каналов для высоких частот</string>
 
     <!-- Tube Simulator -->
-    <string name="section_tube_simulator">Ламповый усилитель (6N1J)</string>
+    <string name="section_tube_simulator">Симулятор лампы</string>
+    <string name="label_tube_type">Тип лампы</string>
+    <string name="label_tube_drive">Усиление</string>
+    <string name="label_tube_mix">Смешение</string>
+    <string name="label_tube_hpf_cutoff">Частота ФВЧ</string>
 
     <!-- Psychoacoustic Bass -->
     <string name="section_psycho_bass">Психоакустический Bass</string>

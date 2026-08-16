@@ -1,0 +1,35 @@
+package com.dxnd.viper4android.data.dao
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.dxnd.viper4android.data.model.DeviceSettings
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface DeviceSettingsDao {
+    @Query("SELECT * FROM device_settings ORDER BY last_connected DESC")
+    fun getAll(): Flow<List<DeviceSettings>>
+
+    @Query("SELECT * FROM device_settings WHERE device_id = :deviceId")
+    suspend fun getByDeviceId(deviceId: String): DeviceSettings?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(settings: DeviceSettings)
+
+    @Query("UPDATE device_settings SET device_name = :name WHERE device_id = :deviceId")
+    suspend fun rename(
+        deviceId: String,
+        name: String,
+    )
+
+    @Query("DELETE FROM device_settings WHERE device_id = :deviceId")
+    suspend fun deleteByDeviceId(deviceId: String)
+
+    @Query("UPDATE device_settings SET last_connected = :time WHERE device_id = :deviceId")
+    suspend fun updateLastConnected(
+        deviceId: String,
+        time: Long,
+    )
+}
