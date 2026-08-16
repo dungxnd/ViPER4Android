@@ -1265,6 +1265,14 @@ class TubeSimulatorEffect : EffectGroupBuilder("tubeSimulator") {
             { it.tubeSimulator.mix },
             { copy(tubeSimulator = tubeSimulator.copy(mix = it)) },
         )
+    val hpfCutoff =
+        int(
+            ViperParams.PARAM_TUBE_SIMULATOR_HPF_CUTOFF,
+            "hpfCutoff",
+            120,
+            { it.tubeSimulator.hpfCutoff },
+            { copy(tubeSimulator = tubeSimulator.copy(hpfCutoff = it)) },
+        )
 }
 
 class AnalogXEffect : EffectGroupBuilder("analogX") {

@@ -693,6 +693,10 @@ object ViperDispatcher {
 
         // Tube Simulator
         effect.setParameter(ViperParams.PARAM_TUBE_SIMULATOR_ENABLE, if (state.tubeSimulator.enable) 1 else 0)
+        effect.setParameter(ViperParams.PARAM_TUBE_SIMULATOR_MODEL, state.tubeSimulator.model)
+        effect.setParameter(ViperParams.PARAM_TUBE_SIMULATOR_DRIVE, state.tubeSimulator.drive)
+        effect.setParameter(ViperParams.PARAM_TUBE_SIMULATOR_MIX, state.tubeSimulator.mix)
+        effect.setParameter(ViperParams.PARAM_TUBE_SIMULATOR_HPF_CUTOFF, state.tubeSimulator.hpfCutoff)
 
         // Psycho Bass
         effect.setParameter(ViperParams.PARAM_PSYCHOACOUSTIC_BASS_ENABLE, if (state.psychoacousticBass.enable) 1 else 0)

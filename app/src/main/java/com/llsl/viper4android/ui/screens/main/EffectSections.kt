@@ -2018,6 +2018,7 @@ fun TubeSimulatorSection(
     val model = vals.model
     val drive = vals.drive
     val mix = vals.mix
+    val hpfCutoff = vals.hpfCutoff
 
     val tubeNames = listOf("12AX7", "6N1P", "12AU7", "12AT7", "6DJ8")
 
@@ -2062,6 +2063,21 @@ fun TubeSimulatorSection(
                     decimals = 0,
                     unit = "%",
                     onCommit = { viewModel.applyPref(Effects.tubeSimulator.mix, it.roundToInt().coerceIn(0, 100)) },
+                ),
+        )
+        LabeledSlider(
+            label = stringResource(R.string.label_tube_hpf_cutoff),
+            value = hpfCutoff.toFloat(),
+            onValueChange = { viewModel.applyPref(Effects.tubeSimulator.hpfCutoff, it.roundToInt()) },
+            valueRange = 20f..250f,
+            valueLabel = "$hpfCutoff Hz",
+            edit =
+                SliderEdit(
+                    displayValue = hpfCutoff.toDouble(),
+                    displayRange = 20.0..250.0,
+                    decimals = 0,
+                    unit = "Hz",
+                    onCommit = { viewModel.applyPref(Effects.tubeSimulator.hpfCutoff, it.roundToInt().coerceIn(20, 250)) },
                 ),
         )
     }

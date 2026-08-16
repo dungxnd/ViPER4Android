@@ -148,6 +148,7 @@
     <string name="label_tube_type">电子管类型</string>
     <string name="label_tube_drive">驱动</string>
     <string name="label_tube_mix">混合</string>
+    <string name="label_tube_hpf_cutoff">高通截止频率</string>
 
     <!-- Psychoacoustic Bass -->
     <string name="section_psycho_bass">虚拟低音</string>

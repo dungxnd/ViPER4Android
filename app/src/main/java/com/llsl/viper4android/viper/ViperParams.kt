@@ -123,10 +123,11 @@ object ViperParams {
     const val PARAM_CURE_ENABLE = 0x10240
     const val PARAM_CURE_CROSSFEED_PRESET = 0x10241
 
-    const val PARAM_TUBE_SIMULATOR_ENABLE = 0x10250
-    const val PARAM_TUBE_SIMULATOR_MODEL  = 0x10251
-    const val PARAM_TUBE_SIMULATOR_DRIVE  = 0x10252
-    const val PARAM_TUBE_SIMULATOR_MIX    = 0x10253
+    const val PARAM_TUBE_SIMULATOR_ENABLE     = 0x10250
+    const val PARAM_TUBE_SIMULATOR_MODEL      = 0x10251
+    const val PARAM_TUBE_SIMULATOR_DRIVE      = 0x10252
+    const val PARAM_TUBE_SIMULATOR_MIX        = 0x10253
+    const val PARAM_TUBE_SIMULATOR_HPF_CUTOFF = 0x10254  // int Hz [20 – 250]; default 120
     const val PARAM_ANALOG_X_ENABLE = 0x10260
     const val PARAM_ANALOG_X_MODE = 0x10261
 
