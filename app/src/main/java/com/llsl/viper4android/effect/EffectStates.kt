@@ -197,7 +197,7 @@ data class AnalogXState(
 
 data class TubeSimulatorState(
     val enable: Boolean = false,
-    val model: Int = 0,   // 0 = 12AX7, 1 = 6N1P, 2 = 12AU7, 3 = 12AT7
+    val model: Int = 0,   // 0 = 12AX7, 1 = 6N1P, 2 = 12AU7, 3 = 12AT7, 4 = 6DJ8
     val drive: Int = 200,
     val mix: Int = 30,
 )
