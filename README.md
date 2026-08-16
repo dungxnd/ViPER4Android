@@ -1,5 +1,12 @@
 # ViPER4Android
 
+> ### 💡 Why another fork?
+> While the tech community is rightfully cautious about "AI slop," we must also recognize an equally dangerous pitfall: **"Human slop."** 
+> 
+> Human slop is the stagnation that comes from conservative maintenance, stubbornness, and refusing to adapt. Ignoring AI and modern development workflows; it degrades the user's experience over time. 
+> 
+> This fork mission is to embrace progression: utilizing LLM, modernizing the UX and compability for our next-level [DSP backend](https://github.com/dungxnd/ViPERDSP). We build for the future, not the past.
+
 Material Design 3 UI for ViPER4Android FX. Full feature set of the ViPER4Android DSP engine with a modern interface.
 
 ## Features
@@ -48,107 +55,16 @@ Material Design 3 UI for ViPER4Android FX. Full feature set of the ViPER4Android
 
 ## Installation
 
-1. Download the latest APK from the [Releases](https://github.com/likelikeslike/ViPER4Android/releases)
+1. Download the latest APK from the [Releases](https://github.com/dungxnd/ViPER4Android/releases)
 2. Install the APK
-3. Flash the Magisk module from [ViPERFX_RE](https://github.com/likelikeslike/ViPERFX_RE) (or the AIDL variant)
+3. Flash the Magisk module from [ViPERFX_RE](https://github.com/dungxnd/ViPERFX_RE) (or the AIDL variant)
 4. Reboot
 5. Open the app and tune the settings.
 6. Enjoy
 
 ## Q&A
 
-- **What is Global Mode?**
-
-    > Creates a single AudioEffect on session ID 0 (the global mix). The Android audio framework
-    > routes all audio through session 0, so one effect instance processes everything. This is the
-    > simplest and most compatible mode.
-
-- **What is Per-App Mode?**
-
-    > Creates a separate AudioEffect for each audio player's session ID. The DSP processes each
-    > app's audio independently. Requires **either root or installation as a privileged system app**
-    > (see below).
-
-- **Why does Per-App Mode require root (or a system-app install)?**
-
-    > On modern Android (API 34+ / Android 14+), the framework no longer broadcasts
-    > `OPEN_AUDIO_EFFECT_CONTROL_SESSION`, and `AudioManager.getActivePlaybackConfigurations()`
-    > returns anonymized session IDs (`sessionId:0, u/pid:-1/-1`) to ordinary apps. The app uses
-    > `AudioPlaybackCallback` to detect playback state changes, then needs a privileged path to
-    > recover the real session ID. Two paths are supported:
-    >
-    > - **Root (default):** the real session ID is read via `su -c "dumpsys audio"`.
-    > - **Privileged system app (no root):** if the app is installed under `/system/priv-app`
-    >   and granted the `MODIFY_AUDIO_ROUTING` permission, the framework returns the real
-    >   (non-anonymized) `sessionId`/`clientUid` directly from `getActivePlaybackConfigurations()`,
-    >   so no root and no `dumpsys` shell-out is needed. The app auto-detects this at runtime
-    >   (the permission grant is the trigger) and prefers it over the root path.
-
-- **How do I install as a privileged system app (per-app mode without root)?**
-
-    > Place the APK in `/system/priv-app/ViPER4Android/` and add a privileged-permission
-    > allowlist so the OS grants `MODIFY_AUDIO_ROUTING`:
-    >
-    > ```xml
-    > <!-- /system/etc/permissions/privapp-permissions-viper4android.xml -->
-    > <?xml version="1.0" encoding="utf-8"?>
-    > <permissions>
-    >     <privapp-permissions package="com.llsl.viper4android">
-    >         <permission name="android.permission.MODIFY_AUDIO_ROUTING"/>
-    >     </privapp-permissions>
-    > </permissions>
-    > ```
-    >
-    > This is done for you when the app ships inside a ROM or a Magisk module that mounts it
-    > systemlessly. Without the allowlist entry the permission is silently **denied**
-    > (with `ro.control_privapp_permissions=enforce`, the default), and the app falls back to the
-    > root path. No platform signature is required — priv-app placement satisfies the `privileged`
-    > half of the `signature|privileged` protection level.
-
-- **What is Per-Device Profile?**
-
-    > Each audio device (e.g., "Galaxy Buds Pro", "Airpods", "Speaker") keeps its own saved effect
-    > settings, loaded automatically on connect and saved when the app goes to the background. See [Per-Device Profiles](#per-device-profiles) for details.
-
-- **What is AIDL Mode?**
-    > Android 14+ introduced a new Audio HAL interface based on AIDL (Android Interface Definition Language),
-    > replacing the legacy HIDL interface. The App automatically check which HAL your device using.
-
-## Presets
-
-Presets are stored in the **v2 grouped-JSON format** (`schemaVersion: 2`):
-
-```json
-{
-  "schemaVersion": 2,
-  "name": "My Preset",
-  "equalizer": { "enable": true, "bandCount": 10, "bands": [3.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0], "presetId": null },
-  "dynamicEq": { "enable": false, "bandCount": 4, "freqs": [...], "gains": [...] },
-  "ddc": { "enable": false, "device": "" }
-}
-```
-
-### Migrating v1 / legacy presets to v2
-
-v2 is **not** compatible with the old flat v1 JSON or the legacy ViPER4Android XML presets. Two migration paths are available:
-
-1. **In-app export (recommended).** In the last v1 app release (1.5.5), use *Export preset as v2* to produce a `.v2.json` file, then import it in v2.
-2. **Command-line tool.** For v1 JSON or legacy XML presets, use [`tools/convert_preset.py`](tools/convert_preset.py) (Python 3.11+):
-
-   ```bash
-   # v1 flat JSON  ->  v2
-   python3 tools/convert_preset.py preset.json -o preset.v2.json
-
-   # legacy ViPER4Android XML  ->  v2
-   python3 tools/convert_preset.py preset.xml -o preset.v2.json
-   ```
-
-The input format (v1 JSON vs. XML) and, for v1 JSON, the headphone/speaker namespace are auto-detected.
-Missing fields are filled with the app defaults. Import the resulting `.v2.json` in the app.
-
-> [!NOTE]
-> v2 no longer stores separate headphone and speaker copies inside a preset. A preset now holds a
-> single unified effect state and is applied to a device through the per-device profile system.
+Read [Q&A Wiki](https://github.com/dungxnd/ViPER4Android-Frontier/wiki/Q&A)
 
 ## Per-Device Profiles
 
@@ -199,6 +115,3 @@ Contributions are welcome. Open an issue or submit a pull request.
 ### Localization
 
 To help with translations, follow the [template guide](app/res-template/values-template/strings.xml).
-
-- RU: [@maurerdv](https://github.com/maurerdv)
-- ZH-CN: [@Arissekai](https://github.com/Arissekai)
