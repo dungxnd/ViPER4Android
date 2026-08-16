@@ -277,9 +277,8 @@ fun PresetDialog(
                     )
                 } else {
                     val listState = rememberLazyListState()
-                    val showTopArrow = listState.firstVisibleItemIndex > 0 ||
-                        listState.firstVisibleItemScrollOffset > 0
-                    val showBottomArrow = listState.canScrollForward
+                    val showBottomArrow = !listState.isScrollInProgress && !listState.canScrollBackward && listState.canScrollForward
+                    val showTopArrow = !listState.isScrollInProgress && listState.canScrollBackward && !listState.canScrollForward
                     val arrowColor = MaterialTheme.colorScheme.surfaceContainerHigh
                     Box(modifier = Modifier.heightIn(max = 300.dp)) {
                         LazyColumn(state = listState) {

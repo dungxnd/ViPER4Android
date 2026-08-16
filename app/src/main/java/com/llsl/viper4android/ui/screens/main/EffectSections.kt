@@ -240,9 +240,9 @@ fun EffectSection(
                     }
                 val scrollState = rememberScrollState()
                 // Show bottom ↓ only when resting at the very top and there is content below
-                val showBottomArrow = scrollState.value == 0 && scrollState.maxValue > 0
+                val showBottomArrow = !scrollState.isScrollInProgress && scrollState.value == 0 && scrollState.maxValue > 0
                 // Show top ↑ only when resting at the very bottom and there is content above
-                val showTopArrow = scrollState.maxValue > 0 && scrollState.value == scrollState.maxValue
+                val showTopArrow = !scrollState.isScrollInProgress && scrollState.maxValue > 0 && scrollState.value == scrollState.maxValue
                 val dialogColor = MaterialTheme.colorScheme.surfaceContainerHigh
                 Box(modifier = Modifier.heightIn(max = maxHeight)) {
                     Column(
