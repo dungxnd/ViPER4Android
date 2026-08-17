@@ -94,6 +94,7 @@ class MainViewModel
         application: Application,
         private val repository: ViperRepository,
         private val updateChecker: UpdateChecker,
+        private val audioOutputDetector: AudioOutputDetector,
     ) : AndroidViewModel(application) {
         companion object {
             private const val NOTIFY_ID_PRESET_IMPORT = 2
@@ -139,7 +140,6 @@ class MainViewModel
 
         private var viperService: ViperService? = null
         private var serviceBound = false
-        private val audioOutputDetector = AudioOutputDetector(application)
         private var eqPresetsJob: Job? = null
         private var dsPresetsJob: Job? = null
 
@@ -179,18 +179,22 @@ class MainViewModel
                 audioOutputDetector.activeDevice.collect { device ->
                     val currentId = uiState.value.activeDeviceId
                     if (device.id != currentId) {
+                        // Ensure the DB entry exists BEFORE loading — loadDeviceSettings
+                        // returns early on a missing entry, so order matters here.
+                        ensureDeviceEntry(device)
                         val dbName2 = repository.getDeviceSettings(device.id)?.deviceName ?: device.name
                         uiState.update { it.copy(activeDeviceName = dbName2, activeDeviceId = device.id) }
                         loadDeviceSettings(device)
+                    } else {
+                        ensureDeviceEntry(device)
                     }
-                    ensureDeviceEntry(device)
                 }
             }
         }
 
         override fun onCleared() {
             runBlocking(Dispatchers.IO) { saveCurrentDeviceSettings() }
-            audioOutputDetector.stop()
+            // Detector lifecycle is owned by the singleton; do NOT call stop() here.
             if (serviceBound) {
                 getApplication<Application>().unbindService(serviceConnection)
                 serviceBound = false

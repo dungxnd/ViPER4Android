@@ -18,7 +18,9 @@ class AudioOutputDetector(
 ) {
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-    private val _activeDevice = MutableStateFlow(detectActiveDevice(audioManager))
+    // Initialized to DEFAULT_SPEAKER; the init block sets the real value AFTER the callback
+    // is registered so no device-change event can be missed between construction and first read.
+    private val _activeDevice = MutableStateFlow(AudioDevice.DEFAULT_SPEAKER)
     val activeDevice: StateFlow<AudioDevice> = _activeDevice.asStateFlow()
 
     private val callback =
@@ -45,12 +47,14 @@ class AudioOutputDetector(
         }
 
     init {
-        val initialDevice = _activeDevice.value
+        // Register callback FIRST so no device event fires in the gap before initial detection.
+        audioManager.registerAudioDeviceCallback(callback, Handler(Looper.getMainLooper()))
+        val initialDevice = detectActiveDevice(audioManager)
+        _activeDevice.value = initialDevice
         FileLogger.i(
             "AudioOutput",
             "Output init: headphone=${if (initialDevice.isHeadphone) "connected" else "disconnected"} device=${initialDevice.name}",
         )
-        audioManager.registerAudioDeviceCallback(callback, Handler(Looper.getMainLooper()))
     }
 
     fun stop() {
@@ -124,8 +128,12 @@ class AudioOutputDetector(
                 val isBt = headphone.type in BT_TYPES
                 val productName = headphone.productName?.toString()?.takeIf { it.isNotBlank() }
                 return if (isBt) {
+                    // Use MAC address (stable across reconnects). When address is blank
+                    // (some BLE/SCO devices on certain ROMs), fall back to a type-based
+                    // key — never the session-scoped headphone.id which changes every reconnect.
                     val address =
-                        headphone.address.takeIf { it.isNotBlank() } ?: "bt_${headphone.id}"
+                        headphone.address.takeIf { it.isNotBlank() }
+                            ?: "bt_type_${headphone.type}"
                     AudioDevice(
                         id = address,
                         name = productName ?: getTypeName(headphone.type),
@@ -133,8 +141,9 @@ class AudioOutputDetector(
                         isHeadphone = true,
                     )
                 } else if (headphone.type in USB_TYPES) {
+                    // USB address is stable (bus path string).
                     val address =
-                        headphone.address.takeIf { it.isNotBlank() } ?: "usb_${headphone.id}"
+                        headphone.address.takeIf { it.isNotBlank() } ?: "usb_type_${headphone.type}"
                     AudioDevice(
                         id = address,
                         name = productName ?: "USB Audio",

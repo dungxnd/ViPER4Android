@@ -43,6 +43,9 @@ class ViperService : LifecycleService() {
     @Inject
     lateinit var repository: ViperRepository
 
+    @Inject
+    lateinit var audioOutputDetectorSingleton: AudioOutputDetector
+
     companion object {
         private const val NOTIFICATION_ID = 1
 
@@ -81,7 +84,6 @@ class ViperService : LifecycleService() {
     private var globalEffect: ViperEffect? = null
     private var useAidlTypeUuid: Boolean = true
     private var globalMode: Boolean = false
-    private var audioOutputDetector: AudioOutputDetector? = null
     private var sessionMonitor: AudioSessionMonitor? = null
     private var stateProvider: (() -> EffectState)? = null
     private var lastUiState: EffectState? = null
@@ -182,8 +184,7 @@ class ViperService : LifecycleService() {
     private var currentServiceDeviceId: String = AudioDevice.ID_SPEAKER
 
     private fun startAudioOutputMonitor() {
-        val detector = AudioOutputDetector(this)
-        audioOutputDetector = detector
+        val detector = audioOutputDetectorSingleton
         currentServiceDeviceId = detector.activeDevice.value.id
         lifecycleScope.launch {
             detector.activeDevice.collect { device ->
@@ -311,8 +312,7 @@ class ViperService : LifecycleService() {
 
     override fun onDestroy() {
         stopSessionMonitor()
-        audioOutputDetector?.stop()
-        audioOutputDetector = null
+        // Detector lifecycle is owned by the singleton; do NOT stop() it here.
         globalEffect?.let {
             it.enabled = false
             it.release()
