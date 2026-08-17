@@ -388,6 +388,10 @@ object ViperParamsSerializer {
     ) {
         val l = ViperParamsLayout.TubeSimulator
         buf.putBool(base + l.ENABLE, s.enable)
+        buf.putInt(base + l.MODEL, s.model)
+        buf.putFloat(base + l.DRIVE, s.drive / 100f)
+        buf.putFloat(base + l.MIX, s.mix / 100f)
+        buf.putFloat(base + l.HPF_CUTOFF, s.hpfCutoff.toFloat())
     }
 
     private fun writeAnalogX(
