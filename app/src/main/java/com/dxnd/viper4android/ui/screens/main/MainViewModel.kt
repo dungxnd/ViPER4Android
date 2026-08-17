@@ -54,7 +54,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -94,6 +96,7 @@ class MainViewModel
         application: Application,
         private val repository: ViperRepository,
         private val updateChecker: UpdateChecker,
+        private val audioOutputDetector: AudioOutputDetector,
     ) : AndroidViewModel(application) {
         companion object {
             private const val NOTIFY_ID_PRESET_IMPORT = 2
@@ -139,7 +142,6 @@ class MainViewModel
 
         private var viperService: ViperService? = null
         private var serviceBound = false
-        private val audioOutputDetector = AudioOutputDetector(application)
         private var eqPresetsJob: Job? = null
         private var dsPresetsJob: Job? = null
 
@@ -176,21 +178,45 @@ class MainViewModel
                 loadDeviceSettings(initialDevice)
                 ensureDeviceEntry(initialDevice)
                 bindToService()
+
+                // Track device-id changes for name updates only — DB load and DSP dispatch
+                // are handled exclusively by ViperService to avoid dual-consumer race.
                 audioOutputDetector.activeDevice.collect { device ->
                     val currentId = uiState.value.activeDeviceId
                     if (device.id != currentId) {
                         val dbName2 = repository.getDeviceSettings(device.id)?.deviceName ?: device.name
                         uiState.update { it.copy(activeDeviceName = dbName2, activeDeviceId = device.id) }
-                        loadDeviceSettings(device)
+                        // ensureDeviceEntry still called so the device list stays consistent.
+                        ensureDeviceEntry(device)
                     }
-                    ensureDeviceEntry(device)
                 }
+            }
+
+            // Observe the state that ViperService resolved and applied to the DSP.
+            // Update UI knobs and persist to DataStore — but do NOT dispatch back to DSP.
+            // NOTE: activeDeviceId is updated atomically here; the previous guard
+            // `if (deviceId == uiState.value.activeDeviceId)` caused silent drops when the
+            // ViewModel's own device-collector hadn't yet updated activeDeviceId before the
+            // Service published on activeDeviceState.
+            viewModelScope.launch {
+                repository.activeDeviceState
+                    .filterNotNull()
+                    .collectLatest { (deviceId, state) ->
+                        val dbName = repository.getDeviceSettings(deviceId)?.deviceName
+                            ?: state.activeDeviceName
+                        uiState.update { current ->
+                            deserializeEffectPrefs(serializeEffectPrefs(state), current).copy(
+                                activeDeviceId = deviceId,
+                                activeDeviceName = dbName,
+                            )
+                        }
+                        saveEffectPrefs(repository, uiState.value)
+                    }
             }
         }
 
         override fun onCleared() {
             runBlocking(Dispatchers.IO) { saveCurrentDeviceSettings() }
-            audioOutputDetector.stop()
             if (serviceBound) {
                 getApplication<Application>().unbindService(serviceConnection)
                 serviceBound = false
@@ -953,7 +979,10 @@ class MainViewModel
             val json = JSONObject(saved.settingsJson)
             uiState.update { deserializeEffectPrefs(json, it) }
             saveEffectPrefs(repository, uiState.value)
-            dispatchFullState()
+            // dispatchFullState() intentionally removed for hardware device-switch path.
+            // ViperService.reapplyForDevice() applies DSP state and then publishes via
+            // repository.activeDeviceState; this method only updates UI + DataStore.
+            // User-edit dispatch still flows through applyPref() → dispatchParam() unchanged.
         }
 
         fun saveSettingsOnBackground() {

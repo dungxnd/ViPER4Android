@@ -14,6 +14,7 @@ import com.dxnd.viper4android.data.dao.PresetDao
 import com.dxnd.viper4android.data.db.ViperDatabase
 import com.dxnd.viper4android.data.model.DsPreset
 import com.dxnd.viper4android.data.model.EqPreset
+import com.dxnd.viper4android.audio.AudioOutputDetector
 import com.dxnd.viper4android.viper.ViperDispatcher
 import dagger.Module
 import dagger.Provides
@@ -140,6 +141,12 @@ object AppModule {
     fun provideDataStore(
         @ApplicationContext context: Context,
     ): DataStore<Preferences> = context.dataStore
+
+    @Provides
+    @Singleton
+    fun provideAudioOutputDetector(
+        @ApplicationContext context: Context,
+    ): AudioOutputDetector = AudioOutputDetector(context)
 
     @Provides
     @Singleton
