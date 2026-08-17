@@ -149,6 +149,9 @@
     <string name="label_tube_drive">驱动</string>
     <string name="label_tube_mix">混合</string>
     <string name="label_tube_hpf_cutoff">高通截止频率</string>
+    <string name="label_tube_wdf_mode">使用 WDF 模型</string>
+    <string name="label_tube_wdf_on">Wave Digital Filter 三极管模式</string>
+    <string name="label_tube_wdf_off">静态二次曲面三极管模式</string>
 
     <!-- Psychoacoustic Bass -->
     <string name="section_psycho_bass">虚拟低音</string>
