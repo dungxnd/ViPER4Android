@@ -194,7 +194,6 @@ class MainViewModel
 
         override fun onCleared() {
             runBlocking(Dispatchers.IO) { saveCurrentDeviceSettings() }
-            // Detector lifecycle is owned by the singleton; do NOT call stop() here.
             if (serviceBound) {
                 getApplication<Application>().unbindService(serviceConnection)
                 serviceBound = false

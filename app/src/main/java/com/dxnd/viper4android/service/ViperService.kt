@@ -312,7 +312,6 @@ class ViperService : LifecycleService() {
 
     override fun onDestroy() {
         stopSessionMonitor()
-        // Detector lifecycle is owned by the singleton; do NOT stop() it here.
         globalEffect?.let {
             it.enabled = false
             it.release()
