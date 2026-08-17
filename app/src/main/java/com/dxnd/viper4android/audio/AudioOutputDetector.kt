@@ -158,7 +158,17 @@ class AudioOutputDetector(
                 )
             }
 
-            val headphone = outputs.firstOrNull { it.type in HEADPHONE_TYPES }
+            // When a real BT device (non-zero MAC) is present, drop zero-MAC BT entries.
+            // Android adds the SCO call-audio profile alongside A2DP with address "00:00:00:00:00:00";
+            // that second onAudioDevicesAdded event must not override the real BT speaker.
+            val hasBtWithRealMac = outputs.any { it.type in BT_TYPES && it.address.isRealBtAddress() }
+            val candidates = if (hasBtWithRealMac) {
+                outputs.filter { it.type !in BT_TYPES || it.address.isRealBtAddress() }
+            } else {
+                outputs
+            }
+
+            val headphone = candidates.firstOrNull { it.type in HEADPHONE_TYPES }
             if (headphone != null) {
                 // getAddress() is API 28; minSdk=28, so no version guard required.
                 val productName = headphone.productName?.toString()?.takeIf { it.isNotBlank() }
@@ -201,7 +211,7 @@ class AudioOutputDetector(
 
         /**
          * Builds a stable, collision-safe device ID using a priority chain:
-         *  1. Non-blank hardware address (MAC for BT, USB bus path) — stable & unique.
+         *  1. Non-blank, non-zero hardware address (MAC for BT, USB bus path) — stable & unique.
          *  2. Non-blank productName + type — stable per model; avoids type-only collisions.
          *  3. Session-scoped device id — not stable across reconnects (creates orphan rows)
          *     but guarantees NO collision with a different physical device.
@@ -213,12 +223,19 @@ class AudioOutputDetector(
             type: Int,
             sessionId: Int,
         ): String {
-            if (address.isNotBlank()) return address
+            if (address.isRealBtAddress()) return address
             if (!productName.isNullOrBlank()) {
                 return "${prefix}_${sanitizeName(productName)}_t${type}"
             }
             return "${prefix}_id_${sessionId}"
         }
+
+        /**
+         * Returns true if this is a non-blank hardware address that is NOT the all-zero
+         * placeholder ("00:00:00:00:00:00") Android assigns to SCO profile devices.
+         */
+        private fun String.isRealBtAddress(): Boolean =
+            isNotBlank() && this != "00:00:00:00:00:00"
 
         /** Lowercases and collapses non-alphanumeric runs to a single '_'. */
         private fun sanitizeName(name: String): String {
