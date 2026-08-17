@@ -44,6 +44,17 @@ object ViperParamsSerializer {
         require(buf.order() == ByteOrder.LITTLE_ENDIAN) {
             "ByteBuffer must be little-endian to match C++ struct layout"
         }
+        // Invariant: each block must immediately follow the previous one.
+        // If ViperParamsLayout is regenerated with a different TubeSimulator.SIZE
+        // this check will catch the resulting overlap before any byte is written.
+        require(ViperParamsLayout.ANALOG_X == ViperParamsLayout.TUBE_SIMULATOR + ViperParamsLayout.TubeSimulator.SIZE) {
+            "Layout overlap: ANALOG_X (${ViperParamsLayout.ANALOG_X}) != " +
+                "TUBE_SIMULATOR (${ViperParamsLayout.TUBE_SIMULATOR}) + TubeSimulator.SIZE (${ViperParamsLayout.TubeSimulator.SIZE})"
+        }
+        require(ViperParamsLayout.SPEAKER_CORRECTION == ViperParamsLayout.ANALOG_X + ViperParamsLayout.AnalogX.SIZE) {
+            "Layout overlap: SPEAKER_CORRECTION (${ViperParamsLayout.SPEAKER_CORRECTION}) != " +
+                "ANALOG_X (${ViperParamsLayout.ANALOG_X}) + AnalogX.SIZE (${ViperParamsLayout.AnalogX.SIZE})"
+        }
         for (i in 0 until ViperParamsLayout.SIZE) {
             buf.put(offset + i, 0)
         }
