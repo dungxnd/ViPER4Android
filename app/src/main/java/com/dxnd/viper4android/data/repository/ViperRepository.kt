@@ -15,7 +15,11 @@ import com.dxnd.viper4android.data.model.DeviceSettings
 import com.dxnd.viper4android.data.model.DsPreset
 import com.dxnd.viper4android.data.model.EqPreset
 import com.dxnd.viper4android.data.model.Preset
+import com.dxnd.viper4android.effect.EffectState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -76,6 +80,20 @@ class ViperRepository
         ) = dsPresetDao.rename(id, name)
 
         suspend fun deleteDsPresetById(id: Long) = dsPresetDao.deleteById(id)
+
+        /**
+         * Emits the device-id + [EffectState] that [ViperService] most recently loaded from
+         * the database and applied to the DSP engine on a hardware device-switch event.
+         * [MainViewModel] observes this to update its UI state **without** performing a
+         * parallel Room read or re-dispatching to the DSP — eliminating the dual-consumer race.
+         */
+        private val _activeDeviceState = MutableStateFlow<Pair<String, EffectState>?>(null)
+        val activeDeviceState: StateFlow<Pair<String, EffectState>?> = _activeDeviceState.asStateFlow()
+
+        /** Called exclusively by [ViperService] after it has loaded and applied a device switch. */
+        fun publishActiveDeviceState(deviceId: String, state: EffectState) {
+            _activeDeviceState.value = deviceId to state
+        }
 
         fun getAllDeviceSettings(): Flow<List<DeviceSettings>> = deviceSettingsDao.getAll()
 

@@ -31,6 +31,8 @@ import com.dxnd.viper4android.viper.ViperParams
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONObject
 import java.io.File
 import java.nio.ByteBuffer
@@ -103,10 +105,8 @@ class ViperService : LifecycleService() {
         FileLogger.i("Service", "Service created")
         lifecycleScope.launch {
             ensureConfigLoaded()
-            if (masterEnabled) {
-                val state = ViperDispatcher.loadFullStateFromPrefs(repository)
-                applyState(state, true)
-            }
+            // Do NOT apply here — startAudioOutputMonitor emits the initial device
+            // immediately and reapplyForDevice handles the first apply correctly.
             startAudioOutputMonitor()
         }
     }
@@ -181,17 +181,22 @@ class ViperService : LifecycleService() {
         }
     }
 
-    private var currentServiceDeviceId: String = AudioDevice.ID_SPEAKER
+    // null = not yet initialized; first emission always triggers reapplyForDevice.
+    private var currentServiceDeviceId: String? = null
+
+    // Serializes concurrent device-switch coroutines: rapid connect/disconnect sequences
+    // (e.g. BT pairing) queue two reapplyForDevice calls. The Mutex ensures they execute
+    // in arrival order rather than interleaving their Room reads and DSP writes.
+    private val deviceSwitchMutex = Mutex()
 
     private fun startAudioOutputMonitor() {
         val detector = audioOutputDetectorSingleton
-        currentServiceDeviceId = detector.activeDevice.value.id
         lifecycleScope.launch {
             detector.activeDevice.collect { device ->
                 if (device.id != currentServiceDeviceId) {
                     FileLogger.i(
                         "Service",
-                        "Device changed: $currentServiceDeviceId -> ${device.id} (${device.name})",
+                        "Device changed: ${currentServiceDeviceId ?: "none"} -> ${device.id} (${device.name})",
                     )
                     currentServiceDeviceId = device.id
                     reapplyForDevice(device)
@@ -201,30 +206,42 @@ class ViperService : LifecycleService() {
     }
 
     private suspend fun reapplyForDevice(device: AudioDevice) {
-        val saved = repository.getDeviceSettings(device.id)
-        val state: EffectState =
-            if (saved != null) {
-                FileLogger.i("Service", "Loading device settings from DB for ${device.id}")
-                val baseState = ViperDispatcher.loadFullStateFromPrefs(repository)
-                val json = JSONObject(saved.settingsJson)
-                deserializeEffectPrefs(json, baseState).also {
-                    repository.updateDeviceLastConnected(device.id)
-                }
-            } else {
-                FileLogger.i("Service", "No DB entry for ${device.id}, using DataStore defaults")
-                val s = ViperDispatcher.loadFullStateFromPrefs(repository)
-                val json = serializeEffectPrefs(s)
+        deviceSwitchMutex.withLock {
+            // Ensure a DB row exists before reading — makes the Service self-sufficient even
+            // when the ViewModel has not yet connected (e.g. background-only operation).
+            val existing = repository.getDeviceSettings(device.id)
+            if (existing == null) {
+                val defaults = ViperDispatcher.loadFullStateFromPrefs(repository)
                 repository.saveDeviceSettings(
                     DeviceSettings(
                         deviceId = device.id,
                         deviceName = device.name,
                         isHeadphone = device.isHeadphone,
-                        settingsJson = json.toString(),
+                        settingsJson = serializeEffectPrefs(defaults).toString(),
                     ),
                 )
-                s
+                FileLogger.i("Service", "Created new DB entry for ${device.id}")
             }
-        applyState(state, masterEnabled)
+
+            val saved = repository.getDeviceSettings(device.id)
+            val state: EffectState =
+                if (saved != null) {
+                    FileLogger.i("Service", "Loading device settings from DB for ${device.id}")
+                    val baseState = ViperDispatcher.loadFullStateFromPrefs(repository)
+                    val json = JSONObject(saved.settingsJson)
+                    deserializeEffectPrefs(json, baseState).also {
+                        repository.updateDeviceLastConnected(device.id)
+                    }
+                } else {
+                    // Unreachable after the ensure block above, but safe fallback.
+                    ViperDispatcher.loadFullStateFromPrefs(repository)
+                }
+
+            applyState(state, masterEnabled)
+            // Publish AFTER applying DSP — ViewModel observes this to update UI state
+            // without performing a parallel DB read or re-dispatching to the DSP engine.
+            repository.publishActiveDeviceState(device.id, state)
+        }
     }
 
     private suspend fun dispatchFullStateToEffect(

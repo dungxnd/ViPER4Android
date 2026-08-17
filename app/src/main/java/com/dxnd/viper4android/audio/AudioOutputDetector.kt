@@ -221,8 +221,12 @@ class AudioOutputDetector(
         }
 
         /** Lowercases and collapses non-alphanumeric runs to a single '_'. */
-        private fun sanitizeName(name: String): String =
-            name.lowercase().replace(Regex("[^a-z0-9]+"), "_").trim('_')
+        private fun sanitizeName(name: String): String {
+            val cleaned = name.lowercase(java.util.Locale.ROOT)
+                .replace(Regex("[^\\p{L}\\p{Nd}]+"), "_")
+                .trim('_')
+            return cleaned.ifBlank { "dev_${name.hashCode().toUInt()}" }
+        }
 
         private fun getBtTypeName(type: Int): String =
             when (type) {
