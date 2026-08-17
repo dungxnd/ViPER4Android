@@ -202,12 +202,13 @@ object ViperParamsLayout {
     }
 
     object TubeSimulator {
-        const val SIZE: Int = 20
+        const val SIZE: Int = 24
         const val ENABLE: Int = 0
         const val MODEL: Int = 4
         const val DRIVE: Int = 8
         const val MIX: Int = 12
         const val HPF_CUTOFF: Int = 16
+        const val MODE: Int = 20
     }
 
     object AnalogX {

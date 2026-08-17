@@ -392,6 +392,7 @@ object ViperParamsSerializer {
         buf.putFloat(base + l.DRIVE, s.drive / 100f)
         buf.putFloat(base + l.MIX, s.mix / 100f)
         buf.putFloat(base + l.HPF_CUTOFF, s.hpfCutoff.toFloat())
+        buf.putInt(base + l.MODE, s.mode)
     }
 
     private fun writeAnalogX(

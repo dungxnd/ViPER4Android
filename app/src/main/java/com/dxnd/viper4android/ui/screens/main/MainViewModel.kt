@@ -849,6 +849,7 @@ class MainViewModel
                 applyPref(Effects.tubeSimulator.model, v.model, last = false)
                 applyPref(Effects.tubeSimulator.drive, v.drive, last = false)
                 applyPref(Effects.tubeSimulator.mix, v.mix, last = false)
+                applyPref(Effects.tubeSimulator.mode, v.mode, last = false)
                 applyPref(Effects.tubeSimulator.hpfCutoff, v.hpfCutoff)
             }
         }
