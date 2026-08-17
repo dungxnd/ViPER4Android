@@ -10,7 +10,7 @@ package com.dxnd.viper4android.viper
 
 object ViperParamsLayout {
     // Root struct: viper::ViPERParams
-    const val SIZE: Int = 1160
+    const val SIZE: Int = 1164
     const val MASTER_LIMITER: Int = 0
     const val PLAYBACK_GAIN_CONTROL: Int = 12
     const val LUFS: Int = 28
@@ -31,10 +31,10 @@ object ViperParamsLayout {
     const val CLARITY: Int = 452
     const val CURE: Int = 464
     const val TUBE_SIMULATOR: Int = 472
-    const val ANALOG_X: Int = 492
-    const val SPEAKER_CORRECTION: Int = 500
-    const val MULTIBAND_COMPRESSOR: Int = 504
-    const val DYNAMIC_EQ: Int = 872
+    const val ANALOG_X: Int = 496   // = TUBE_SIMULATOR + TubeSimulator.SIZE (24)
+    const val SPEAKER_CORRECTION: Int = 504
+    const val MULTIBAND_COMPRESSOR: Int = 508
+    const val DYNAMIC_EQ: Int = 876
 
     object MasterLimiter {
         const val SIZE: Int = 12
@@ -202,12 +202,13 @@ object ViperParamsLayout {
     }
 
     object TubeSimulator {
-        const val SIZE: Int = 20
+        const val SIZE: Int = 24
         const val ENABLE: Int = 0
         const val MODEL: Int = 4
         const val DRIVE: Int = 8
         const val MIX: Int = 12
         const val HPF_CUTOFF: Int = 16
+        const val MODE: Int = 20
     }
 
     object AnalogX {

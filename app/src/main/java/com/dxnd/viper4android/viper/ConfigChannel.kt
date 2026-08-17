@@ -28,7 +28,9 @@ object ConfigChannel {
     private const val SHM_BULK_PATH = "/data/local/tmp/v4a/shm_bulk.bin"
 
     private const val SHM_MAGIC = 0x534D3456 // 'V4MS' little-endian
-    private const val FORMAT_VERSION = 5
+    // Bump whenever the ViPERParams byte layout changes so an older driver
+    // (compiled against the previous struct) refuses to consume the region.
+    private const val FORMAT_VERSION = 6
 
     private const val STATUS_SHM_SIZE = 256
     private const val PARAM_SHM_SIZE = 4096
@@ -43,9 +45,17 @@ object ConfigChannel {
 
     private const val STATUS_DATA_OFFSET = 20
 
-    private const val PARAMS_HEADER_SIZE = 16
+    // Params header layout (20 bytes):
+    //   [0..3]   magic
+    //   [4..7]   format version
+    //   [8..11]  active slot index
+    //   [12..15] update counter
+    //   [16..19] ViPERParams struct size — lets either side detect a layout mismatch
+    //            independently of FORMAT_VERSION.
+    private const val PARAMS_HEADER_SIZE = 20
     private const val PARAMS_ACTIVE_OFFSET = 8
     private const val PARAMS_UPDATE_COUNT_OFFSET = 12
+    private const val PARAMS_STRUCT_SIZE_OFFSET = 16
     private const val PARAMS_SLOT_A_OFFSET = PARAMS_HEADER_SIZE
     private const val PARAMS_SLOT_B_OFFSET = PARAMS_HEADER_SIZE + ViperParamsLayout.SIZE
 
@@ -136,11 +146,15 @@ object ConfigChannel {
 
         val magic = buf.getInt(0)
         val version = buf.getInt(4)
-        if (magic != SHM_MAGIC || version != FORMAT_VERSION) {
+        val structSize = buf.getInt(PARAMS_STRUCT_SIZE_OFFSET)
+        val paramsRegion = (path == SHM_PARAMS_PATH)
+        val structSizeStale = paramsRegion && structSize != ViperParamsLayout.SIZE
+        if (magic != SHM_MAGIC || version != FORMAT_VERSION || structSizeStale) {
             buf.putInt(0, SHM_MAGIC)
             buf.putInt(4, FORMAT_VERSION)
             buf.putInt(8, 0)
             buf.putInt(12, 0)
+            if (paramsRegion) buf.putInt(PARAMS_STRUCT_SIZE_OFFSET, ViperParamsLayout.SIZE)
         }
         FileLogger.i("ConfigChannel", "mmap OK: $path size=$size")
         return buf

@@ -2019,6 +2019,7 @@ fun TubeSimulatorSection(
     val drive = vals.drive
     val mix = vals.mix
     val hpfCutoff = vals.hpfCutoff
+    val mode = vals.mode
 
     val tubeNames = listOf("12AX7", "6N1P", "12AU7", "12AT7", "6DJ8")
 
@@ -2029,6 +2030,16 @@ fun TubeSimulatorSection(
         descriptionRes = R.string.effect_desc_tube_simulator,
         icon = Icons.Default.MusicNote,
     ) {
+        LabeledSwitch(
+            label = stringResource(R.string.label_tube_wdf_mode),
+            checked = mode == 1,
+            onCheckedChange = { checked ->
+                viewModel.applyPref(Effects.tubeSimulator.mode, if (checked) 1 else 0)
+            },
+            subtitle = stringResource(
+                if (mode == 1) R.string.label_tube_wdf_on else R.string.label_tube_wdf_off,
+            ),
+        )
         LabeledDropdown(
             label = stringResource(R.string.label_tube_type),
             selectedValue = tubeNames.getOrElse(model) { tubeNames[0] },

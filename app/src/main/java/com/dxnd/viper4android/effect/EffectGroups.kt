@@ -1273,6 +1273,14 @@ class TubeSimulatorEffect : EffectGroupBuilder("tubeSimulator") {
             { it.tubeSimulator.hpfCutoff },
             { copy(tubeSimulator = tubeSimulator.copy(hpfCutoff = it)) },
         )
+    val mode =
+        int(
+            ViperParams.PARAM_TUBE_SIMULATOR_MODE,
+            "mode",
+            0,
+            { it.tubeSimulator.mode },
+            { copy(tubeSimulator = tubeSimulator.copy(mode = it)) },
+        )
 }
 
 class AnalogXEffect : EffectGroupBuilder("analogX") {

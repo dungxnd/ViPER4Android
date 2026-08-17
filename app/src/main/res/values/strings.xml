@@ -149,6 +149,9 @@
     <string name="label_tube_drive">Tube Drive</string>
     <string name="label_tube_mix">Tube Mix</string>
     <string name="label_tube_hpf_cutoff">HPF Cutoff</string>
+    <string name="label_tube_wdf_mode">Use WDF processing</string>
+    <string name="label_tube_wdf_on">Wave Digital Filter triode model</string>
+    <string name="label_tube_wdf_off">Static tube model</string>
 
     <!-- Psychoacoustic Bass -->
     <string name="section_psycho_bass">Psychoacoustic Bass</string>

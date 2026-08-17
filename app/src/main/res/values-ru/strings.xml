@@ -149,6 +149,9 @@
     <string name="label_tube_drive">Усиление</string>
     <string name="label_tube_mix">Смешение</string>
     <string name="label_tube_hpf_cutoff">Частота ФВЧ</string>
+    <string name="label_tube_wdf_mode">Использовать модель WDF</string>
+    <string name="label_tube_wdf_on">Режим триода на основе Wave Digital Filter</string>
+    <string name="label_tube_wdf_off">Статический квадрический режим триода</string>
 
     <!-- Psychoacoustic Bass -->
     <string name="section_psycho_bass">Психоакустический Bass</string>

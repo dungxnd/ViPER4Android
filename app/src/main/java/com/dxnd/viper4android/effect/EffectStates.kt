@@ -201,6 +201,7 @@ data class TubeSimulatorState(
     val drive: Int = 200,
     val mix: Int = 30,
     val hpfCutoff: Int = 120,  // HPF cutoff [20 – 250 Hz]; default 120 Hz
+    val mode: Int = 0,         // 0 = static, 1 = WDF
 )
 
 data class SpeakerCorrectionState(
