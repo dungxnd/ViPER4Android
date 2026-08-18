@@ -76,20 +76,21 @@ jobs:
       - name: Build release APK
         run: ./gradlew assembleRelease --no-daemon --build-cache
 
-      # ── Resolve version for artifact naming & bump detection ──────────────
+      # ── Resolve version & check if already released ───────────────────────
       - name: Extract version name
         id: version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION=$(grep 'versionName' app/build.gradle.kts | awk -F'"' '{print $2}')
           echo "name=$VERSION" >> "$GITHUB_OUTPUT"
 
-          # Detect whether versionName changed vs the previous commit.
-          # On a first commit (no parent) git diff exits 128 — treat as bumped.
-          if git diff HEAD~1 HEAD -- app/build.gradle.kts 2>/dev/null \
-               | grep -q '^+.*versionName'; then
-            echo "bumped=true" >> "$GITHUB_OUTPUT"
+          # Release if no tag exists yet for this version (regardless of what files changed)
+          TAG="v${VERSION}"
+          if gh release view "$TAG" --repo "${{ github.repository }}" > /dev/null 2>&1; then
+            echo "needs_release=false" >> "$GITHUB_OUTPUT"
           else
-            echo "bumped=false" >> "$GITHUB_OUTPUT"
+            echo "needs_release=true" >> "$GITHUB_OUTPUT"
           fi
 
       # ── Rename outputs ────────────────────────────────────────────────────
@@ -126,7 +127,7 @@ jobs:
           startsWith(github.ref, 'refs/tags/') ||
           (
             github.event_name == 'push' &&
-            steps.version.outputs.bumped == 'true'
+            steps.version.outputs.needs_release == 'true'
           )
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -165,13 +166,16 @@ jobs:
           startsWith(github.ref, 'refs/tags/') ||
           (
             github.event_name == 'push' &&
-            steps.version.outputs.bumped == 'true'
+            steps.version.outputs.needs_release == 'true'
           )
         uses: nosovj/llm-release-action@v1
         with:
-          model: openrouter/dots-studio/dots-3-note-preview:free
+          model: gemini/gemini-3.5-flash-lite
           current_version: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('v{0}', steps.version.outputs.name) }}
           content_override: ${{ steps.changes.outputs.content }}
+          temperature: 0.3
+          max_tokens: 4000
+          timeout: 180
           changelog_config: |
             default:
               preset: developer
@@ -183,7 +187,7 @@ jobs:
               generate_summary: true
               sections: [breaking, security, features, improvements, fixes, performance, infrastructure, docs]
         env:
-          OPENROUTER_API_KEY: ${{ secrets.OR_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_KEY }}
 
       - name: Write release body
         id: body
@@ -191,7 +195,7 @@ jobs:
           startsWith(github.ref, 'refs/tags/') ||
           (
             github.event_name == 'push' &&
-            steps.version.outputs.bumped == 'true'
+            steps.version.outputs.needs_release == 'true'
           )
         run: |
           echo '${{ steps.llm.outputs.changelogs }}' \
@@ -203,7 +207,7 @@ jobs:
           startsWith(github.ref, 'refs/tags/') ||
           (
             github.event_name == 'push' &&
-            steps.version.outputs.bumped == 'true'
+            steps.version.outputs.needs_release == 'true'
           )
         uses: softprops/action-gh-release@v3
         with:
