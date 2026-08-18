@@ -7,6 +7,19 @@
 > 
 > This fork mission is to embrace progression: utilizing LLM, modernizing the UX and compability for our next-level [DSP backend](https://github.com/dungxnd/ViPERDSP). We build for the future, not the past.
 
+## What this fork has over the old stubborn repo
+
+- Progressing in the era of AI. No refusal to the future of development and user experience. 
+- Modern implementation of Tube Simulation with more tube types, more dynamic behavior.
+- Fixed wrongly active output speaker detected.
+- Better user experience.
+- Use modern rewrote DSP driver to prevent memory leaks.
+- Many more fixes/improvements.
+
+(You must [new driver](https://github.com/dungxnd/ViPERFX_RE/releases) for this app.)
+
+---
+
 Material Design 3 UI for ViPER4Android FX. Full feature set of the ViPER4Android DSP engine with a modern interface.
 
 ## Features
@@ -23,7 +36,7 @@ Material Design 3 UI for ViPER4Android FX. Full feature set of the ViPER4Android
 - ViPER Bass Mono (original v0.5.0 algorithm)
 - Psychoacoustic Bass Enhancement
 - ViPER Clarity (Natural / OZone+ / XHiFi)
-- Tube Simulator
+- Tube Simulator (WDF trinode mode, 5 tube types)
 - AnalogX
 
 - ViPER-DDC (Digital Device Correction)
