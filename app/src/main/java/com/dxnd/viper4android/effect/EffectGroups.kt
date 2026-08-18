@@ -232,10 +232,10 @@ class FetCompressorEffect : EffectGroupBuilder("fetCompressor") {
         int(
             ViperParams.PARAM_FET_COMPRESSOR_RATIO,
             "ratio",
-            100,
+            400,
             { it.fetCompressor.ratio },
             { copy(fetCompressor = fetCompressor.copy(ratio = it)) },
-            range = 0..200,
+            range = 100..10000,
         )
     val kneeAuto =
         bool(
@@ -407,10 +407,10 @@ class MultibandCompressorEffect : EffectGroupBuilder("multibandCompressor") {
         intList(
             ViperParams.PARAM_MULTIBAND_COMPRESSOR_BAND_RATIO,
             "ratios",
-            listOf(50, 50, 50, 50, 50),
+            listOf(400, 400, 400, 400, 400),
             { it.multibandCompressor.ratios },
             { copy(multibandCompressor = multibandCompressor.copy(ratios = it)) },
-            range = 0..200,
+            range = 100..10000,
         )
     val gains =
         intList(

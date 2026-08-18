@@ -26,7 +26,7 @@ data class LufsState(
 data class FetCompressorState(
     val enable: Boolean = false,
     val threshold: Int = 100,
-    val ratio: Int = 100,
+    val ratio: Int = 400,
     val kneeAuto: Boolean = true,
     val knee: Int = 0,
     val kneeMulti: Int = 0,
@@ -48,7 +48,7 @@ data class MultibandCompressorState(
     val bandEnables: List<Boolean> = listOf(true, true, true, true, true),
     val crossovers: List<Int> = listOf(120, 500, 4000, 8000),
     val thresholds: List<Int> = listOf(-18, -18, -18, -18, -18),
-    val ratios: List<Int> = listOf(50, 50, 50, 50, 50),
+    val ratios: List<Int> = listOf(400, 400, 400, 400, 400),
     val gains: List<Int> = listOf(0, 0, 0, 0, 0),
     val knees: List<Int> = listOf(0, 0, 0, 0, 0),
     val kneeMultis: List<Int> = listOf(0, 0, 0, 0, 0),

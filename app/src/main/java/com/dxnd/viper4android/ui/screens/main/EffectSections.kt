@@ -464,19 +464,31 @@ fun FetCompressorSection(
                     onCommit = { viewModel.applyPref(Effects.fetCompressor.threshold, it.roundToInt().coerceIn(-48, 0)) },
                 ),
         )
+        val ratioLevels = remember {
+            listOf(
+                100 to "1:1",
+                200 to "2:1",
+                400 to "4:1",
+                800 to "8:1",
+                1200 to "12:1",
+                2000 to "20:1",
+                10000 to "∞:1",
+            )
+        }
+        val currentRatioIndex = remember(ratio) {
+            val idx = ratioLevels.indexOfFirst { it.first == ratio }
+            if (idx >= 0) idx else ratioLevels.indices.minByOrNull { kotlin.math.abs(ratioLevels[it].first - ratio) } ?: 2
+        }
         LabeledSlider(
             label = stringResource(R.string.label_fet_ratio),
-            value = ratio / 100f,
-            onValueChange = { viewModel.applyPref(Effects.fetCompressor.ratio, (it * 100f).roundToInt()) },
-            valueRange = 0f..2f,
-            valueLabel = String.format(Locale.US, "%.1f", ratio / 100.0),
-            edit =
-                SliderEdit(
-                    displayValue = ratio / 100.0,
-                    displayRange = 0.0..2.0,
-                    decimals = 1,
-                    onCommit = { viewModel.applyPref(Effects.fetCompressor.ratio, (it * 100).roundToInt().coerceIn(0, 200)) },
-                ),
+            value = currentRatioIndex.toFloat(),
+            onValueChange = {
+                val idx = it.roundToInt().coerceIn(0, ratioLevels.lastIndex)
+                viewModel.applyPref(Effects.fetCompressor.ratio, ratioLevels[idx].first)
+            },
+            valueRange = 0f..ratioLevels.lastIndex.toFloat(),
+            steps = ratioLevels.size - 2,
+            valueLabel = ratioLevels[currentRatioIndex].second,
         )
         LabeledSwitch(
             label = stringResource(R.string.label_fet_auto_knee),
@@ -795,19 +807,31 @@ fun MultibandCompressorSection(
                     onCommit = { onThresholdChange(it.roundToInt().coerceIn(-48, 0)) },
                 ),
         )
+        val ratioLevels = remember {
+            listOf(
+                100 to "1:1",
+                200 to "2:1",
+                400 to "4:1",
+                800 to "8:1",
+                1200 to "12:1",
+                2000 to "20:1",
+                10000 to "∞:1",
+            )
+        }
+        val currentRatioIndex = remember(ratio) {
+            val idx = ratioLevels.indexOfFirst { it.first == ratio }
+            if (idx >= 0) idx else ratioLevels.indices.minByOrNull { kotlin.math.abs(ratioLevels[it].first - ratio) } ?: 2
+        }
         LabeledSlider(
             label = stringResource(R.string.label_fet_ratio),
-            value = ratio / 100f,
-            onValueChange = { onRatioChange((it * 100f).roundToInt()) },
-            valueRange = 0f..2f,
-            valueLabel = String.format(Locale.US, "%.1f", ratio / 100.0),
-            edit =
-                SliderEdit(
-                    displayValue = ratio / 100.0,
-                    displayRange = 0.0..2.0,
-                    decimals = 1,
-                    onCommit = { onRatioChange((it * 100).roundToInt().coerceIn(0, 200)) },
-                ),
+            value = currentRatioIndex.toFloat(),
+            onValueChange = {
+                val idx = it.roundToInt().coerceIn(0, ratioLevels.lastIndex)
+                onRatioChange(ratioLevels[idx].first)
+            },
+            valueRange = 0f..ratioLevels.lastIndex.toFloat(),
+            steps = ratioLevels.size - 2,
+            valueLabel = ratioLevels[currentRatioIndex].second,
         )
         LabeledSwitch(
             label = stringResource(R.string.label_fet_auto_knee),
