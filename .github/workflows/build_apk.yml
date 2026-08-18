@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           ref: ${{ inputs.branch || github.ref }}
-          fetch-depth: 2
+          fetch-depth: 0  # required by llm-release-action for full commit history
 
       - name: Set up JDK 21
         uses: actions/setup-java@v5
@@ -120,6 +120,72 @@ jobs:
           retention-days: 30
 
       # ── GitHub Release (tag pushes OR versionName bump on branch push) ────
+      - name: Collect changes for changelog
+        id: changes
+        if: |
+          startsWith(github.ref, 'refs/tags/') ||
+          (
+            github.event_name == 'push' &&
+            steps.version.outputs.bumped == 'true'
+          )
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('v{0}', steps.version.outputs.name) }}"
+
+          PREV_TAG=$(gh release list --repo "${{ github.repository }}" \
+            --exclude-drafts --limit 10 --json tagName \
+            | jq -r '.[].tagName' \
+            | grep -v "^${TAG}$" | head -1)
+
+          if [ -n "$PREV_TAG" ]; then
+            LOG=$(git log "${PREV_TAG}..HEAD" \
+              --pretty=format:"- %s (%h) by %an" 2>/dev/null || true)
+          else
+            LOG=$(git log --max-count=30 \
+              --pretty=format:"- %s (%h) by %an" 2>/dev/null || true)
+          fi
+          [ -z "$LOG" ] && LOG="(no commits found)"
+
+          CONTENT_FILE=$(mktemp)
+          echo "## ViPER4Android" > "$CONTENT_FILE"
+          echo "### Commits"     >> "$CONTENT_FILE"
+          echo "$LOG"            >> "$CONTENT_FILE"
+
+          DELIM="CHANGES_$(openssl rand -hex 8)"
+          {
+            echo "content<<${DELIM}"
+            cat "$CONTENT_FILE"
+            echo "${DELIM}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Generate LLM changelog
+        id: llm
+        if: |
+          startsWith(github.ref, 'refs/tags/') ||
+          (
+            github.event_name == 'push' &&
+            steps.version.outputs.bumped == 'true'
+          )
+        uses: nosovj/llm-release-action@v1
+        with:
+          model: openrouter/dots-studio/dots-3-note-preview
+          current_version: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('v{0}', steps.version.outputs.name) }}
+          content_override: ${{ steps.changes.outputs.content }}
+          changelog_config: |
+            default:
+              preset: developer
+              emojis: true
+              include_commits: false
+              include_contributors: true
+              link_prs: true
+              link_issues: true
+              generate_summary: true
+              sections: [breaking, security, features, improvements, fixes, performance, infrastructure, docs]
+              languages: [en]
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OR_KEY }}
+
       - name: Create GitHub Release
         if: |
           startsWith(github.ref, 'refs/tags/') ||
@@ -134,4 +200,4 @@ jobs:
           files: |
             artifacts/ViPER4Android-${{ steps.version.outputs.name }}.apk
             artifacts/ViPER4Android-${{ steps.version.outputs.name }}-debug.apk
-          generate_release_notes: true
+          body: ${{ fromJson(steps.llm.outputs.changelogs).default.en }}
