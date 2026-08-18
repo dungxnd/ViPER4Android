@@ -169,7 +169,7 @@ jobs:
           )
         uses: nosovj/llm-release-action@v1
         with:
-          model: openrouter/dots-studio/dots-3-note-preview
+          model: openrouter/dots-studio/dots-3-note-preview:free
           current_version: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('v{0}', steps.version.outputs.name) }}
           content_override: ${{ steps.changes.outputs.content }}
           changelog_config: |
