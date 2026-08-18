@@ -182,7 +182,6 @@ jobs:
               link_issues: true
               generate_summary: true
               sections: [breaking, security, features, improvements, fixes, performance, infrastructure, docs]
-              languages: ["en"]
         env:
           OPENROUTER_API_KEY: ${{ secrets.OR_KEY }}
 
