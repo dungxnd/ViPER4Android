@@ -14,7 +14,7 @@ class ViperEffect(
 ) {
     companion object {
         val EFFECT_TYPE_UUID: UUID = UUID.fromString("ec7178ec-e5e1-4432-a3f4-4657e6795210")
-        val EFFECT_TYPE_UUID_AIDL: UUID = UUID.fromString("7261676f-6d75-7369-6364-28e2fd3ac39e")
+        val EFFECT_TYPE_UUID_AIDL: UUID = UUID.fromString("7261726f-6d75-7369-6364-28e2fd3ac39e")
         val EFFECT_UUID: UUID = UUID.fromString("90380da3-8536-4744-a6a3-5731970e640f")
 
         private val ctor: Constructor<AudioEffect>? by lazy {
