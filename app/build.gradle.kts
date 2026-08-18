@@ -21,8 +21,8 @@ android {
         applicationId = "com.dxnd.viper4android"
         minSdk = 28
         targetSdk = 37
-        versionCode = 260817
-        versionName = "2.1.2"
+        versionCode = 20260818
+        versionName = "2.2.0"
     }
 
     androidResources {
