@@ -127,9 +127,24 @@ class ViperRepository
         val aidlMode: Boolean by lazy {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return@lazy false
 
-            // Check 1: Check actual registered audio effects in framework first.
-            // If the driver is installed as legacy HIDL (type == EFFECT_TYPE_UUID and not EFFECT_TYPE_UUID_AIDL),
-            // aidlMode MUST be false so the app uses the legacy pipeline.
+            // Check 1: Module install indicator written by install.sh.
+            // install.sh writes "aidl" or "legacy" to $MODPATH/aidl_mode.txt after running
+            // its full HAL detection (FS signals, VINTF, Binder service check).  This is the
+            // ground truth for what was actually installed — trust it before any runtime probe.
+            val modulePaths = listOf(
+                "/data/adb/modules/ViPER4Android/aidl_mode.txt",
+                "/data/adb/modules/ViPER4Android-RE/aidl_mode.txt",
+            )
+            for (path in modulePaths) {
+                val content = runCatching { java.io.File(path).readText().trim() }.getOrNull()
+                if (content == "aidl") return@lazy true
+                if (content == "legacy") return@lazy false
+            }
+
+            // Check 2: Registered audio effects in the framework.
+            // If the driver loaded correctly, queryEffects() tells us which pipeline is active.
+            // If the driver is NOT loaded (wrong install / missing HAL), neither type will appear
+            // and we fall through to Check 3.
             val descriptors = runCatching { AudioEffect.queryEffects() }.getOrNull()
             if (descriptors != null) {
                 val hasAidlEffect = descriptors.any { it.type == ViperEffect.EFFECT_TYPE_UUID_AIDL }
@@ -138,7 +153,10 @@ class ViperRepository
                 if (hasLegacyEffect) return@lazy false
             }
 
-            // Check 2: ServiceManager AIDL HAL listing
+            // Check 3: ServiceManager AIDL HAL listing.
+            // android.hardware.audio.effect.IFactory is the canonical Binder service name for
+            // the AIDL audio-effect HAL.  Its presence is a hard guarantee the AIDL stack is
+            // running — the same check install.sh performs as Signal 5.
             val smCheck =
                 runCatching {
                     val services =
@@ -151,8 +169,12 @@ class ViperRepository
                 }.getOrDefault(false)
             if (smCheck) return@lazy true
 
-            // Check 3: Check /data/local/tmp/v4a/aidl_mode indicator or fallback to OS version
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+            // Check 4: Safe default — legacy.
+            // API level alone is NOT a reliable indicator: many Android 15 OEMs ship the
+            // legacy audio effect HAL.  Defaulting to legacy means the driver simply won't
+            // load (graceful failure) rather than crashing AudioEffect with an AIDL type UUID
+            // on a device that has no AIDL HAL (→ versionCode=-1, samplingRate=unknown).
+            false
         }
 
         suspend fun setBooleanPreference(
