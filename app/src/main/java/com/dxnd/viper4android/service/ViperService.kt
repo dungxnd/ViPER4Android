@@ -138,6 +138,14 @@ class ViperService : LifecycleService() {
         FileLogger.i("Service", "Global effect created (aidlType=$useAidlTypeUuid)")
     }
 
+    /**
+     * True when the active output device is Android Auto wired projection.
+     * In this mode we force session-0 (global) effect regardless of the user's
+     * [globalMode] setting, because the AAP projection stream does not broadcast
+     * an audio session ID — per-session monitoring would miss it entirely.
+     */
+    private var androidAutoActive: Boolean = false
+
     private fun applyState(
         state: EffectState,
         masterOn: Boolean,
@@ -152,9 +160,25 @@ class ViperService : LifecycleService() {
             globalEffect = null
             return
         }
-        if (globalMode) {
+        // On Android Auto wired (AOAP): force global/session-0 mode.
+        // The AAP projection stream owns the USB_ACCESSORY output thread;
+        // a session-0 INSERT effect on that MixerThread processes all audio going
+        // to the head unit.  Per-session monitoring would never see the AA stream.
+        val effectiveGlobal = globalMode || androidAutoActive
+        if (effectiveGlobal) {
+            // Stop per-session monitor if it was running (e.g. switching from speaker → AA)
+            if (sessionMonitor != null) {
+                stopSessionMonitor()
+                releaseAllSessions()
+            }
             if (globalEffect == null) initGlobalEffect()
         } else {
+            // If we just left Android Auto (or global mode was never on), tear down any
+            // lingering global effect so per-session monitoring takes over cleanly.
+            if (!globalMode && globalEffect != null) {
+                globalEffect?.let { it.enabled = false; it.release() }
+                globalEffect = null
+            }
             if (sessionMonitor == null) startSessionMonitor()
         }
         var shmWritten = false
@@ -196,8 +220,9 @@ class ViperService : LifecycleService() {
                 if (device.id != currentServiceDeviceId) {
                     FileLogger.i(
                         "Service",
-                        "Device changed: ${currentServiceDeviceId ?: "none"} -> ${device.id} (${device.name})",
+                        "Device changed: ${currentServiceDeviceId ?: "none"} -> ${device.id} (${device.name}) androidAuto=${device.isAndroidAuto}",
                     )
+                    androidAutoActive = device.isAndroidAuto
                     currentServiceDeviceId = device.id
                     reapplyForDevice(device)
                 }

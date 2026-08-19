@@ -111,6 +111,14 @@ class AudioOutputDetector(
             )
 
         /**
+         * Android Auto wired projection device type.
+         * When the phone is in AOAP accessory mode (USB cable to head unit), Android
+         * registers the car head unit as TYPE_USB_ACCESSORY. Audio is routed to a
+         * normal MixerThread for this output, so session-0 INSERT effects apply.
+         */
+        private const val TYPE_USB_ACCESSORY = AudioDeviceInfo.TYPE_USB_ACCESSORY
+
+        /**
          * Wired/line-level outputs. TYPE_LINE_ANALOG, TYPE_LINE_DIGITAL, and TYPE_AUX_LINE are
          * all API 23 (below minSdk=28) so no version guard is required.
          */
@@ -158,6 +166,15 @@ class AudioOutputDetector(
                 )
             }
 
+            // Android Auto wired projection (AOAP accessory mode): TYPE_USB_ACCESSORY is
+            // registered when the phone connects via USB cable to a head unit. Audio output
+            // goes through a standard MixerThread so session-0 INSERT effects apply.
+            // Also covers legacy AOA 2.0 audio docks — same session-0 behaviour is correct.
+            if (outputs.any { it.type == TYPE_USB_ACCESSORY }) {
+                FileLogger.i("AudioOutput", "AOAP/Android Auto accessory detected (TYPE_USB_ACCESSORY) → global mode")
+                return AudioDevice.ANDROID_AUTO
+            }
+
             // When a real BT device (non-zero MAC) is present, drop zero-MAC BT entries.
             // Android adds the SCO call-audio profile alongside A2DP with address "00:00:00:00:00:00";
             // that second onAudioDevicesAdded event must not override the real BT speaker.
@@ -203,6 +220,7 @@ class AudioOutputDetector(
         private fun getDevicePriority(type: Int): Int =
             when (type) {
                 in BT_TYPES -> PRIORITY_BT
+                TYPE_USB_ACCESSORY -> PRIORITY_USB  // Android Auto wired
                 in USB_TYPES -> PRIORITY_USB
                 in WIRED_TYPES -> PRIORITY_WIRED
                 AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> PRIORITY_SPEAKER
