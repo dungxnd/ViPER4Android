@@ -153,21 +153,13 @@ class ViperRepository
                 if (hasLegacyEffect) return@lazy false
             }
 
-            // Check 3: ServiceManager AIDL HAL listing.
-            // android.hardware.audio.effect.IFactory is the canonical Binder service name for
-            // the AIDL audio-effect HAL.  Its presence is a hard guarantee the AIDL stack is
-            // running — the same check install.sh performs as Signal 5.
-            val smCheck =
-                runCatching {
-                    val services =
-                        Class
-                            .forName("android.os.ServiceManager")
-                            .getDeclaredMethod("listServices")
-                            .invoke(null) as? Array<*>
-                    val serviceList = services.orEmpty().filterIsInstance<String>()
-                    serviceList.any { it.startsWith("android.hardware.audio.effect.IFactory") }
-                }.getOrDefault(false)
-            if (smCheck) return@lazy true
+            // Check 3: REMOVED — ServiceManager.listServices() is NOT a reliable AIDL indicator.
+            // On Android 13+, audioserver registers its own in-process IFactory AIDL proxy in
+            // the regular ServiceManager even when the underlying vendor HAL is pure HIDL
+            // (e.g. android.hardware.audio.effect@7.0::IEffectsFactory via hwbinder).
+            // Querying ServiceManager would return "found" on every Android 13+ Qualcomm/OEM
+            // device that runs HIDL vendor audio → guaranteed false-positive → versionCode=-1.
+            // The ground truth is lshal (hwbinder) or the VINTF manifest, not ServiceManager.
 
             // Check 4: Safe default — legacy.
             // API level alone is NOT a reliable indicator: many Android 15 OEMs ship the
