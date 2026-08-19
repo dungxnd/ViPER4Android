@@ -1,5 +1,7 @@
 package com.dxnd.viper4android.ui.screens.debug
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -8,6 +10,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.core.content.FileProvider
 import com.dxnd.viper4android.utils.FileLogger
 import com.dxnd.viper4android.utils.RootShell
 import kotlinx.coroutines.CoroutineScope
@@ -20,6 +23,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -99,6 +103,27 @@ internal class DebugLogState {
     fun shutdown() {
         FileLogger.setListener(null)
         scope.cancel()
+    }
+
+    /**
+     * Writes the currently visible entries to a temp file and returns a
+     * content:// URI that can be passed to a share/send intent.
+     * Returns null if the export dir cannot be created or an I/O error occurs.
+     */
+    fun exportAsText(context: Context): Uri? {
+        val exportDir = File(context.cacheDir, "debug_export")
+        if (!exportDir.exists() && !exportDir.mkdirs()) return null
+        val stamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+        val file = File(exportDir, "viper_debug_$stamp.txt")
+        return try {
+            file.bufferedWriter().use { writer ->
+                visibleEntries.forEach { writer.appendLine(it.raw) }
+            }
+            FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+        } catch (e: IOException) {
+            Log.e(TAG, "Failed to export debug log", e)
+            null
+        }
     }
 
     private fun startDriverStream(useNowTimestamp: Boolean) {

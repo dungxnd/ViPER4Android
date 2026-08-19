@@ -295,6 +295,7 @@
     <string name="debug_mode_enabled">Debug mode enabled</string>
     <string name="debug_search_hint">Filter logs\u2026</string>
     <string name="debug_disable_debug">Disable Debug</string>
+    <string name="debug_export_txt">Export TXT</string>
 
     <!-- Debug filters -->
     <string name="debug_filter_all">All</string>

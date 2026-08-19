@@ -1,5 +1,6 @@
 package com.dxnd.viper4android.ui.screens.debug
 
+import android.content.Intent
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -34,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -56,6 +58,7 @@ fun DebugLogDialog(
     onDisableDebug: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val context = LocalContext.current
     val state = remember { DebugLogState() }
     val listState = rememberLazyListState()
     var sourceFilter by remember { mutableStateOf(SourceFilter.ALL) }
@@ -136,6 +139,21 @@ fun DebugLogDialog(
                 }
                 TextButton(onClick = { state.clear() }) {
                     Text(stringResource(R.string.action_clear))
+                }
+                TextButton(
+                    onClick = {
+                        val uri = state.exportAsText(context)
+                        if (uri != null) {
+                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_STREAM, uri)
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                            context.startActivity(Intent.createChooser(intent, null))
+                        }
+                    },
+                ) {
+                    Text(stringResource(R.string.debug_export_txt))
                 }
             }
         },

@@ -54,12 +54,22 @@ class ViperEffect(
 
         fun isDriverInstalled(): Boolean {
             return try {
-                val descriptors = AudioEffect.queryEffects() ?: return false
-                descriptors.any { desc ->
+                val descriptors = AudioEffect.queryEffects()
+                if (descriptors == null) {
+                    FileLogger.w("Effect", "queryEffects() returned null")
+                    return false
+                }
+                FileLogger.d("Effect", "queryEffects() returned ${descriptors.size} descriptor(s)")
+                descriptors.forEachIndexed { i, desc ->
+                    FileLogger.d("Effect", "  [$i] uuid=${desc.uuid} type=${desc.type} name=${desc.name}")
+                }
+                val found = descriptors.any { desc ->
                     desc.uuid == EFFECT_UUID ||
                         desc.type == EFFECT_TYPE_UUID ||
                         desc.type == EFFECT_TYPE_UUID_AIDL
                 }
+                FileLogger.d("Effect", "isDriverInstalled=$found")
+                found
             } catch (e: Exception) {
                 FileLogger.e("Effect", "Failed to query audio effects", e)
                 false

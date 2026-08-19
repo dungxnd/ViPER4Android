@@ -1488,32 +1488,42 @@ class MainViewModel
         }
 
         fun queryDriverStatus() {
+            FileLogger.d("ViewModel", "queryDriverStatus: aidl=${aidlModeEnabled.value} serviceBound=$serviceBound")
             val active = viperService?.getActiveEffect()
             if (active != null && active.isCreated) {
+                FileLogger.d("ViewModel", "queryDriverStatus: using active effect")
                 queryDriverStatusFrom(active)
                 return
             }
+            FileLogger.d("ViewModel", "queryDriverStatus: no active effect — probing HAL")
 
             // Check if driver is registered in audio HAL / framework
             if (ViperEffect.isDriverInstalled()) {
                 val typeUuid =
                     if (aidlModeEnabled.value) ViperEffect.EFFECT_TYPE_UUID_AIDL else ViperEffect.EFFECT_TYPE_UUID
+                FileLogger.d("ViewModel", "queryDriverStatus: driver found in HAL, probing with typeUuid=$typeUuid")
                 val probe = ViperEffect(0, typeUuid)
                 if (probe.create()) {
                     queryDriverStatusFrom(probe)
                     probe.release()
                     return
                 }
+                FileLogger.w("ViewModel", "queryDriverStatus: probe.create() failed despite HAL registration")
                 probe.release()
+            } else {
+                FileLogger.w("ViewModel", "queryDriverStatus: driver NOT found in HAL descriptors")
             }
 
             if (aidlModeEnabled.value) {
+                FileLogger.d("ViewModel", "queryDriverStatus: AIDL mode — falling back to file status")
                 queryDriverStatusFromFile()
                 return
             }
 
+            FileLogger.d("ViewModel", "queryDriverStatus: HIDL fallback probe on session 0")
             val probe = ViperEffect(0, ViperEffect.EFFECT_TYPE_UUID)
             if (!probe.create()) {
+                FileLogger.e("ViewModel", "queryDriverStatus: HIDL probe failed — driver not found")
                 driverStatus.value = DriverStatus(installed = false)
                 probe.release()
                 return
@@ -1525,6 +1535,7 @@ class MainViewModel
         private fun queryDriverStatusFromFile() {
             val status = ConfigChannel.readStatus()
             if (status != null && status.versionCode > 0) {
+                FileLogger.d("ViewModel", "queryDriverStatusFromFile: shm status ok (ver=${status.versionCode})")
                 driverStatus.value =
                     DriverStatus(
                         installed = true,
@@ -1536,7 +1547,9 @@ class MainViewModel
                     )
                 return
             }
+            FileLogger.w("ViewModel", "queryDriverStatusFromFile: shm status null or versionCode=0")
             if (ViperEffect.isDriverInstalled()) {
+                FileLogger.d("ViewModel", "queryDriverStatusFromFile: HAL confirms driver active (no shm yet)")
                 driverStatus.value =
                     DriverStatus(
                         installed = true,
@@ -1544,6 +1557,7 @@ class MainViewModel
                     )
                 return
             }
+            FileLogger.e("ViewModel", "queryDriverStatusFromFile: shm missing and HAL reports no driver")
             if (driverStatus.value.installed) return
             driverStatus.value = DriverStatus(installed = false)
         }
