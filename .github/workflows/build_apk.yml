@@ -26,6 +26,7 @@ concurrency:
 
 permissions:
   contents: write
+  pull-requests: read
 
 jobs:
   build:
@@ -152,6 +153,30 @@ jobs:
           echo "## ViPER4Android" > "$CONTENT_FILE"
           echo "### Commits"     >> "$CONTENT_FILE"
           echo "$LOG"            >> "$CONTENT_FILE"
+
+          # ── Associated PR description & first comment ─────────────────────
+          PR_NUMBER=$(gh api \
+            "repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" \
+            --jq '.[0].number // ""' 2>/dev/null || true)
+          if [ -n "$PR_NUMBER" ]; then
+            PR_BODY=$(gh api \
+              "repos/${{ github.repository }}/pulls/${PR_NUMBER}" \
+              --jq '.body // ""' 2>/dev/null || true)
+            [ -n "$PR_BODY" ] && {
+              echo ""                     >> "$CONTENT_FILE"
+              echo "### PR Description"   >> "$CONTENT_FILE"
+              echo "${PR_BODY}"           >> "$CONTENT_FILE"
+            }
+
+            FIRST_COMMENT=$(gh api \
+              "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments?per_page=1" \
+              --jq '.[0].body // ""' 2>/dev/null || true)
+            [ -n "$FIRST_COMMENT" ] && {
+              echo ""                       >> "$CONTENT_FILE"
+              echo "### PR First Comment"   >> "$CONTENT_FILE"
+              echo "${FIRST_COMMENT}"       >> "$CONTENT_FILE"
+            }
+          fi
 
           DELIM="CHANGES_$(openssl rand -hex 8)"
           {
