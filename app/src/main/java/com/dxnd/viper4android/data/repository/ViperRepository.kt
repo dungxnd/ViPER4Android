@@ -123,15 +123,30 @@ class ViperRepository
         // noinspection PrivateApi
         // noinspection DiscouragedPrivateApi
         val aidlMode: Boolean by lazy {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) return@lazy false
-            runCatching {
-                val services =
-                    Class
-                        .forName("android.os.ServiceManager")
-                        .getDeclaredMethod("listServices")
-                        .invoke(null) as? Array<*>
-                "android.hardware.audio.effect.IFactory/default" in services.orEmpty()
-            }.getOrDefault(false)
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return@lazy false
+            // Check 1: AudioEffect framework query (checks if AIDL effect descriptor is registered)
+            if (ViperEffect.isDriverInstalled()) {
+                val descriptors = runCatching { AudioEffect.queryEffects() }.getOrNull()
+                if (descriptors?.any { it.type == ViperEffect.EFFECT_TYPE_UUID_AIDL } == true) {
+                    return@lazy true
+                }
+            }
+            // Check 2: ServiceManager AIDL HAL listing
+            val smCheck =
+                runCatching {
+                    val services =
+                        Class
+                            .forName("android.os.ServiceManager")
+                            .getDeclaredMethod("listServices")
+                            .invoke(null) as? Array<*>
+                    val serviceList = services.orEmpty().filterIsInstance<String>()
+                    serviceList.any { it.startsWith("android.hardware.audio.effect.IFactory") }
+                }.getOrDefault(false)
+            if (smCheck) return@lazy true
+
+            // Check 3: Default to true on modern Android (API 35+ / Android 15, 16, 17+)
+            // where AIDL Audio HAL is the required standard HAL implementation.
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
         }
 
         suspend fun setBooleanPreference(

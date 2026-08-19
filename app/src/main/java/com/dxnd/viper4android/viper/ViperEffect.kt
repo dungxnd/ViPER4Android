@@ -51,6 +51,20 @@ class ViperEffect(
                 null
             }
         }
+
+        fun isDriverInstalled(): Boolean {
+            return try {
+                val descriptors = AudioEffect.queryEffects() ?: return false
+                descriptors.any { desc ->
+                    desc.uuid == EFFECT_UUID ||
+                        desc.type == EFFECT_TYPE_UUID ||
+                        desc.type == EFFECT_TYPE_UUID_AIDL
+                }
+            } catch (e: Exception) {
+                FileLogger.e("Effect", "Failed to query audio effects", e)
+                false
+            }
+        }
     }
 
     private var effect: AudioEffect? = null

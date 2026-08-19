@@ -1488,15 +1488,30 @@ class MainViewModel
         }
 
         fun queryDriverStatus() {
-            if (aidlModeEnabled.value) {
-                queryDriverStatusFromFile()
-                return
-            }
             val active = viperService?.getActiveEffect()
             if (active != null && active.isCreated) {
                 queryDriverStatusFrom(active)
                 return
             }
+
+            // Check if driver is registered in audio HAL / framework
+            if (ViperEffect.isDriverInstalled()) {
+                val typeUuid =
+                    if (aidlModeEnabled.value) ViperEffect.EFFECT_TYPE_UUID_AIDL else ViperEffect.EFFECT_TYPE_UUID
+                val probe = ViperEffect(0, typeUuid)
+                if (probe.create()) {
+                    queryDriverStatusFrom(probe)
+                    probe.release()
+                    return
+                }
+                probe.release()
+            }
+
+            if (aidlModeEnabled.value) {
+                queryDriverStatusFromFile()
+                return
+            }
+
             val probe = ViperEffect(0, ViperEffect.EFFECT_TYPE_UUID)
             if (!probe.create()) {
                 driverStatus.value = DriverStatus(installed = false)
@@ -1509,20 +1524,28 @@ class MainViewModel
 
         private fun queryDriverStatusFromFile() {
             val status = ConfigChannel.readStatus()
-            if (status == null || status.versionCode <= 0) {
-                if (driverStatus.value.installed) return
-                driverStatus.value = DriverStatus(installed = false)
+            if (status != null && status.versionCode > 0) {
+                driverStatus.value =
+                    DriverStatus(
+                        installed = true,
+                        versionCode = status.versionCode,
+                        versionName = status.versionName,
+                        architecture = status.architecture,
+                        streaming = status.streaming,
+                        samplingRate = status.sampleRate,
+                    )
                 return
             }
-            driverStatus.value =
-                DriverStatus(
-                    installed = true,
-                    versionCode = status.versionCode,
-                    versionName = status.versionName,
-                    architecture = status.architecture,
-                    streaming = status.streaming,
-                    samplingRate = status.sampleRate,
-                )
+            if (ViperEffect.isDriverInstalled()) {
+                driverStatus.value =
+                    DriverStatus(
+                        installed = true,
+                        versionName = "AIDL Driver (Active)",
+                    )
+                return
+            }
+            if (driverStatus.value.installed) return
+            driverStatus.value = DriverStatus(installed = false)
         }
 
         private fun queryDriverStatusFrom(effect: ViperEffect) {
