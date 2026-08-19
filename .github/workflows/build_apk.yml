@@ -227,9 +227,12 @@ jobs:
             steps.version.outputs.needs_release == 'true'
           )
         run: |
-          echo '${{ steps.llm.outputs.changelogs }}' \
-            | jq -r '.default.en // "(no changelog generated)"' \
-            > artifacts/changelog.md
+          TAG="${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('v{0}', steps.version.outputs.name) }}"
+          BODY=$(echo '${{ steps.llm.outputs.changelogs }}' \
+            | jq -r '.default.en // "(no changelog generated)"')
+          # Strip any version heading the LLM may have written and prepend the real one
+          BODY=$(echo "$BODY" | sed '/^#\+.*[0-9]\+\.[0-9]\+\.[0-9]\+/d')
+          printf '## Changelog %s\n\n%s\n' "$TAG" "$BODY" > artifacts/changelog.md
 
       - name: Create GitHub Release
         if: |
