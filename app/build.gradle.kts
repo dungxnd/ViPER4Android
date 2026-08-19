@@ -22,7 +22,7 @@ android {
         minSdk = 28
         targetSdk = 37
         versionCode = 20260819
-        versionName = "2.3.0"
+        versionName = "2.3.1"
     }
 
     androidResources {
@@ -66,6 +66,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

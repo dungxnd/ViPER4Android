@@ -53,6 +53,8 @@ fun UpdateDialog(
     val headingColor = MaterialTheme.colorScheme.primary
     val codeColor = bodyColor.copy(alpha = 0.85f)
     val blocks = remember(release.body) { parseBlocks(release.body) }
+    val isDebug = com.dxnd.viper4android.BuildConfig.DEBUG
+    val variantStr = stringResource(if (isDebug) R.string.build_variant_debug else R.string.build_variant_release)
     AlertDialog(
         onDismissRequest = { if (!downloading) onDismiss() },
         title = { Text(stringResource(if (upToDate) R.string.update_up_to_date_title else R.string.update_available_title)) },
@@ -64,7 +66,7 @@ fun UpdateDialog(
                     color = MaterialTheme.colorScheme.primary,
                 )
                 Text(
-                    text = stringResource(R.string.update_current_version, currentVersion),
+                    text = stringResource(R.string.update_current_version, currentVersion, variantStr),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 8.dp),
@@ -102,7 +104,7 @@ fun UpdateDialog(
                     horizontalArrangement = Arrangement.End,
                 ) {
                     OutlinedButton(onClick = onDownloadInstall, enabled = !downloading) {
-                        Text(stringResource(R.string.update_download_install))
+                        Text(stringResource(R.string.update_download_install, variantStr))
                     }
                 }
             }

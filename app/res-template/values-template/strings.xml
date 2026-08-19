@@ -253,8 +253,10 @@
     <string name="update_available_title">Update available</string>
     <string name="update_new_version">New version: %1$s</string>
     <string name="update_latest_version">Latest version: %1$s</string>
-    <string name="update_current_version">Current: %1$s</string>
-    <string name="update_download_install">Download &amp; Install</string>
+    <string name="update_current_version">Current: %1$s (%2$s)</string>
+    <string name="update_download_install">Download &amp; Install (%1$s)</string>
+    <string name="build_variant_debug">Debug</string>
+    <string name="build_variant_release">Release</string>
     <string name="update_view_on_github">View on GitHub</string>
     <string name="update_downloading">Downloading\u2026 %1$d%%</string>
     <string name="update_no_apk_asset">No APK asset in this release</string>

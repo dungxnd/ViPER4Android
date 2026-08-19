@@ -86,16 +86,32 @@ class UpdateChecker
         private fun parseRelease(raw: String): ReleaseInfo {
             val obj = JSONObject(raw)
             val assets = obj.optJSONArray("assets")
-            var apkUrl: String? = null
-            var apkName: String? = null
+            val isDebugBuild = com.dxnd.viper4android.BuildConfig.DEBUG
+            var targetApkUrl: String? = null
+            var targetApkName: String? = null
+            var fallbackApkUrl: String? = null
+            var fallbackApkName: String? = null
+
             if (assets != null) {
                 for (i in 0 until assets.length()) {
                     val asset = assets.getJSONObject(i)
                     val name = asset.optString("name")
-                    if (name.endsWith(".apk", ignoreCase = true)) {
-                        apkUrl = asset.optString("browser_download_url")
-                        apkName = name
+                    if (!name.endsWith(".apk", ignoreCase = true)) continue
+
+                    val isDebugAsset = name.contains("-debug", ignoreCase = true)
+                    val downloadUrl = asset.optString("browser_download_url")
+
+                    if (isDebugBuild && isDebugAsset) {
+                        targetApkUrl = downloadUrl
+                        targetApkName = name
                         break
+                    } else if (!isDebugBuild && !isDebugAsset) {
+                        targetApkUrl = downloadUrl
+                        targetApkName = name
+                        break
+                    } else if (fallbackApkUrl == null) {
+                        fallbackApkUrl = downloadUrl
+                        fallbackApkName = name
                     }
                 }
             }
@@ -104,8 +120,8 @@ class UpdateChecker
                 name = obj.optString("name").ifBlank { obj.optString("tag_name") },
                 body = obj.optString("body"),
                 htmlUrl = obj.optString("html_url"),
-                apkUrl = apkUrl,
-                apkName = apkName,
+                apkUrl = targetApkUrl ?: fallbackApkUrl,
+                apkName = targetApkName ?: fallbackApkName,
             )
         }
 
