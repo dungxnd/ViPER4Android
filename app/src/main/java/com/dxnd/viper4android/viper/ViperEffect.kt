@@ -63,11 +63,8 @@ class ViperEffect(
                 descriptors.forEachIndexed { i, desc ->
                     FileLogger.d("Effect", "  [$i] uuid=${desc.uuid} type=${desc.type} name=${desc.name}")
                 }
-                val found = descriptors.any { desc ->
-                    desc.uuid == EFFECT_UUID ||
-                        desc.type == EFFECT_TYPE_UUID ||
-                        desc.type == EFFECT_TYPE_UUID_AIDL
-                }
+                // Anchor on ViPER's own effect UUID — same rationale as resolveTypeUuid().
+                val found = descriptors.any { desc -> desc.uuid == EFFECT_UUID }
                 FileLogger.d("Effect", "isDriverInstalled=$found")
                 found
             } catch (e: Exception) {
@@ -85,13 +82,24 @@ class ViperEffect(
          *
          * This is the single authoritative source for A/H mode — the driver itself
          * decides which type it exposes; the app just reads that fact.
+         *
+         * IMPORTANT: the lookup is anchored on [EFFECT_UUID] (ViPER's own effect UUID),
+         * not on the type field. On Android 13+ there are system effects whose type is
+         * already [EFFECT_TYPE_UUID_AIDL]; a type-first search would pick those up and
+         * falsely report AIDL mode even when ViPER itself is registered under the legacy
+         * HIDL type UUID.
          */
         fun resolveTypeUuid(): UUID? {
             return try {
                 val descriptors = AudioEffect.queryEffects() ?: return null
-                descriptors.firstOrNull { it.uuid == EFFECT_UUID || it.type == EFFECT_TYPE_UUID_AIDL || it.type == EFFECT_TYPE_UUID }
-                    ?.type
-                    ?.also { FileLogger.d("Effect", "resolveTypeUuid=$it") }
+                // Anchor on ViPER's own effect UUID — this is the only truly unique identifier.
+                // DO NOT fall back to searching by type: on Android 13+ the system registers
+                // its own effects with EFFECT_TYPE_UUID_AIDL, so a type-based search would
+                // falsely report AIDL mode even when ViPER itself is on the legacy HIDL path.
+                val viperDesc = descriptors.firstOrNull { it.uuid == EFFECT_UUID }
+                viperDesc?.type?.also {
+                    FileLogger.d("Effect", "resolveTypeUuid: type=$it")
+                }
             } catch (e: Exception) {
                 FileLogger.e("Effect", "resolveTypeUuid failed", e)
                 null
