@@ -75,6 +75,28 @@ class ViperEffect(
                 false
             }
         }
+
+        /**
+         * Ask the framework which type UUID the driver actually registered under.
+         *
+         * Returns [EFFECT_TYPE_UUID_AIDL] when the driver is loaded on the AIDL HAL,
+         * [EFFECT_TYPE_UUID] when loaded on the legacy HIDL HAL, or `null` when the
+         * driver is not present in the descriptor list at all.
+         *
+         * This is the single authoritative source for A/H mode — the driver itself
+         * decides which type it exposes; the app just reads that fact.
+         */
+        fun resolveTypeUuid(): UUID? {
+            return try {
+                val descriptors = AudioEffect.queryEffects() ?: return null
+                descriptors.firstOrNull { it.uuid == EFFECT_UUID || it.type == EFFECT_TYPE_UUID_AIDL || it.type == EFFECT_TYPE_UUID }
+                    ?.type
+                    ?.also { FileLogger.d("Effect", "resolveTypeUuid=$it") }
+            } catch (e: Exception) {
+                FileLogger.e("Effect", "resolveTypeUuid failed", e)
+                null
+            }
+        }
     }
 
     private var effect: AudioEffect? = null

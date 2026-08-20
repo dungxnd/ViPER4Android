@@ -84,7 +84,7 @@ class ViperService : LifecycleService() {
     private val binder = LocalBinder()
     private val sessions = SparseArray<ViperEffect>()
     private var globalEffect: ViperEffect? = null
-    private var useAidlTypeUuid: Boolean = true
+    private var useAidlTypeUuid: Boolean = false
     private var globalMode: Boolean = false
     private var sessionMonitor: AudioSessionMonitor? = null
     private var stateProvider: (() -> EffectState)? = null
@@ -115,7 +115,10 @@ class ViperService : LifecycleService() {
 
     private suspend fun ensureConfigLoaded() {
         if (configLoaded) return
-        useAidlTypeUuid = repository.aidlMode
+        // Determine A/H mode by asking the framework which type UUID the driver registered.
+        // The driver itself is the authority; the app does not read any install-time hint files.
+        useAidlTypeUuid = (ViperEffect.resolveTypeUuid() == ViperEffect.EFFECT_TYPE_UUID_AIDL)
+        FileLogger.i("Service", "HAL mode resolved: ${if (useAidlTypeUuid) "AIDL" else "HIDL/legacy"}")
         globalMode = repository.getBooleanPreference(ViperRepository.PREF_GLOBAL_MODE).first()
         bootMasterEnabled = repository.getBooleanPreference(ViperRepository.PREF_MASTER_ENABLE).first()
         configLoaded = true

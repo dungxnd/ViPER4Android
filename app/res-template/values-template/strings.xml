@@ -234,7 +234,9 @@
 
     <!-- Settings -->
     <string name="settings_auto_start">Auto-start on boot</string>
-    <string name="settings_aidl_mode">AIDL mode</string>
+    <string name="settings_hal_mode">HAL mode</string>
+    <string name="settings_hal_mode_aidl">AIDL</string>
+    <string name="settings_hal_mode_hidl">HIDL</string>
     <string name="settings_global_mode">Global mode</string>
     <string name="settings_driver_version">Driver version</string>
     <string name="settings_driver_arch">Driver architecture</string>

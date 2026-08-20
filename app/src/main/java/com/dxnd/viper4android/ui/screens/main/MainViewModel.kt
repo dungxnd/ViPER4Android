@@ -77,6 +77,8 @@ data class DriverStatus(
     val architecture: String = "",
     val streaming: Boolean = false,
     val samplingRate: Int = 0,
+    /** "A" for AIDL HAL, "H" for HIDL/legacy HAL, "" when driver is not loaded. */
+    val halMode: String = "",
 )
 
 data class UpdateState(
@@ -126,9 +128,6 @@ class MainViewModel
             field: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
 
         val autoStartEnabled: StateFlow<Boolean>
-            field: MutableStateFlow<Boolean> = MutableStateFlow(false)
-
-        val aidlModeEnabled: StateFlow<Boolean>
             field: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
         val globalModeEnabled: StateFlow<Boolean>
@@ -345,7 +344,6 @@ class MainViewModel
             autoStartEnabled.value = repository.getBooleanPreference(PREF_AUTO_START, false).first()
             globalModeEnabled.value = repository.getBooleanPreference(PREF_GLOBAL_MODE, false).first()
             debugModeEnabled.value = repository.getBooleanPreference(PREF_DEBUG_MODE, false).first()
-            aidlModeEnabled.value = repository.aidlMode
         }
 
         private fun loadEqPresetsForBandCount(bandCount: Int) {
@@ -390,7 +388,7 @@ class MainViewModel
             if (!uiState.value.convolver.enable) return
             try {
                 ifMasterOn {
-                    if (aidlModeEnabled.value) {
+                    if (driverStatus.value.halMode == "A") {
                         viperService?.applyConvolverKernelAidl(fileName, force = true)
                     } else {
                         viperService?.applyConvolverKernelHidl(fileName)
@@ -412,7 +410,7 @@ class MainViewModel
             if (!uiState.value.ddc.enable) return
             try {
                 ifMasterOn {
-                    if (aidlModeEnabled.value) {
+                    if (driverStatus.value.halMode == "A") {
                         viperService?.applyDdcDeviceAidl(name, force = true)
                     } else {
                         viperService?.applyDdcDeviceHidl(name)
@@ -1488,7 +1486,7 @@ class MainViewModel
         }
 
         fun queryDriverStatus() {
-            FileLogger.d("ViewModel", "queryDriverStatus: aidl=${aidlModeEnabled.value} serviceBound=$serviceBound")
+            FileLogger.d("ViewModel", "queryDriverStatus: serviceBound=$serviceBound")
             val active = viperService?.getActiveEffect()
             if (active != null && active.isCreated) {
                 FileLogger.d("ViewModel", "queryDriverStatus: using active effect")
@@ -1497,42 +1495,34 @@ class MainViewModel
             }
             FileLogger.d("ViewModel", "queryDriverStatus: no active effect — probing HAL")
 
-            // Check if driver is registered in audio HAL / framework
-            if (ViperEffect.isDriverInstalled()) {
-                val typeUuid =
-                    if (aidlModeEnabled.value) ViperEffect.EFFECT_TYPE_UUID_AIDL else ViperEffect.EFFECT_TYPE_UUID
-                FileLogger.d("ViewModel", "queryDriverStatus: driver found in HAL, probing with typeUuid=$typeUuid")
+            // Ask the driver which type UUID it registered under; it is the authority on A/H mode.
+            val typeUuid = ViperEffect.resolveTypeUuid()
+            if (typeUuid != null) {
+                FileLogger.d("ViewModel", "queryDriverStatus: driver found in HAL, typeUuid=$typeUuid")
                 val probe = ViperEffect(0, typeUuid)
                 if (probe.create()) {
-                    queryDriverStatusFrom(probe)
+                    queryDriverStatusFrom(probe, typeUuid)
                     probe.release()
                     return
                 }
                 FileLogger.w("ViewModel", "queryDriverStatus: probe.create() failed despite HAL registration")
                 probe.release()
+
+                // Driver is registered but effect creation failed — AIDL path may still work
+                // via shared-memory channel; check the status file before giving up.
+                if (typeUuid == ViperEffect.EFFECT_TYPE_UUID_AIDL) {
+                    FileLogger.d("ViewModel", "queryDriverStatus: AIDL — falling back to shm status")
+                    queryDriverStatusFromFile(halMode = "A")
+                    return
+                }
             } else {
                 FileLogger.w("ViewModel", "queryDriverStatus: driver NOT found in HAL descriptors")
             }
 
-            if (aidlModeEnabled.value) {
-                FileLogger.d("ViewModel", "queryDriverStatus: AIDL mode — falling back to file status")
-                queryDriverStatusFromFile()
-                return
-            }
-
-            FileLogger.d("ViewModel", "queryDriverStatus: HIDL fallback probe on session 0")
-            val probe = ViperEffect(0, ViperEffect.EFFECT_TYPE_UUID)
-            if (!probe.create()) {
-                FileLogger.e("ViewModel", "queryDriverStatus: HIDL probe failed — driver not found")
-                driverStatus.value = DriverStatus(installed = false)
-                probe.release()
-                return
-            }
-            queryDriverStatusFrom(probe)
-            probe.release()
+            driverStatus.value = DriverStatus(installed = false)
         }
 
-        private fun queryDriverStatusFromFile() {
+        private fun queryDriverStatusFromFile(halMode: String) {
             val status = ConfigChannel.readStatus()
             if (status != null && status.versionCode > 0) {
                 FileLogger.d("ViewModel", "queryDriverStatusFromFile: shm status ok (ver=${status.versionCode})")
@@ -1544,6 +1534,7 @@ class MainViewModel
                         architecture = status.architecture,
                         streaming = status.streaming,
                         samplingRate = status.sampleRate,
+                        halMode = halMode,
                     )
                 return
             }
@@ -1553,7 +1544,8 @@ class MainViewModel
                 driverStatus.value =
                     DriverStatus(
                         installed = true,
-                        versionName = "AIDL Driver (Active)",
+                        versionName = "Driver Active",
+                        halMode = halMode,
                     )
                 return
             }
@@ -1562,7 +1554,7 @@ class MainViewModel
             driverStatus.value = DriverStatus(installed = false)
         }
 
-        private fun queryDriverStatusFrom(effect: ViperEffect) {
+        private fun queryDriverStatusFrom(effect: ViperEffect, typeUuid: java.util.UUID? = null) {
             val versionCode = effect.getDriverVersionCode()
             val archName = effect.getArchitectureString()
             val streaming = effect.isStreaming()
@@ -1575,6 +1567,12 @@ class MainViewModel
                 } else {
                     versionCode.toString()
                 }
+            val resolvedType = typeUuid ?: ViperEffect.resolveTypeUuid()
+            val halMode = when (resolvedType) {
+                ViperEffect.EFFECT_TYPE_UUID_AIDL -> "A"
+                ViperEffect.EFFECT_TYPE_UUID -> "H"
+                else -> ""
+            }
             driverStatus.value =
                 DriverStatus(
                     installed = true,
@@ -1583,6 +1581,7 @@ class MainViewModel
                     architecture = archName,
                     streaming = streaming,
                     samplingRate = samplingRate,
+                    halMode = halMode,
                 )
         }
 

@@ -1,14 +1,12 @@
 package com.dxnd.viper4android.ui.screens.settings
 
 import android.widget.Toast
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -26,13 +24,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dxnd.viper4android.R
 import com.dxnd.viper4android.ui.screens.main.DriverStatus
-import com.dxnd.viper4android.ui.theme.status_active_green
 
 @Composable
 fun SettingsDialog(
     autoStartEnabled: Boolean,
     globalModeEnabled: Boolean,
-    aidlModeActive: Boolean,
     driverStatus: DriverStatus,
     appVersionName: String,
     onAutoStartChanged: (Boolean) -> Unit,
@@ -133,25 +129,13 @@ fun SettingsDialog(
                     label = stringResource(R.string.settings_driver_arch),
                     value = if (driverStatus.installed) driverStatus.architecture else "-",
                 )
-                if (aidlModeActive) {
+                if (driverStatus.installed && driverStatus.halMode.isNotEmpty()) {
                     HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                    Row(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.settings_aidl_mode),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Canvas(modifier = Modifier.size(6.dp)) {
-                            drawCircle(status_active_green)
-                        }
-                    }
+                    SettingsInfoRow(
+                        label = stringResource(R.string.settings_hal_mode),
+                        value = if (driverStatus.halMode == "A") stringResource(R.string.settings_hal_mode_aidl)
+                               else stringResource(R.string.settings_hal_mode_hidl),
+                    )
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                 Row(
