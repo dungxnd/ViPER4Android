@@ -1,5 +1,6 @@
 package com.dxnd.viper4android.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +26,7 @@ fun LabeledSwitch(
         modifier =
             modifier
                 .fillMaxWidth()
+                .clickable(enabled = enabled) { onCheckedChange(!checked) }
                 .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

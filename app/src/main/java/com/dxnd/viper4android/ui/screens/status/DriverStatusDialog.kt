@@ -68,6 +68,16 @@ fun DriverStatusDialog(
                                 stringResource(R.string.status_unknown)
                             },
                     )
+                    if (driverStatus.halMode.isNotEmpty()) {
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                        StatusRow(
+                            label = stringResource(R.string.settings_hal_mode),
+                            value = if (driverStatus.halMode == "A")
+                                stringResource(R.string.settings_hal_mode_aidl)
+                            else
+                                stringResource(R.string.settings_hal_mode_hidl),
+                        )
+                    }
                 }
             }
         },
