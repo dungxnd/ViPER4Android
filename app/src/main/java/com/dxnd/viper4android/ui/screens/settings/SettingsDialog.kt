@@ -6,7 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +22,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.dxnd.viper4android.ui.components.ScrollHintBox
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -48,7 +52,12 @@ fun SettingsDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.menu_settings)) },
         text = {
-            Column {
+            val scrollState = rememberScrollState()
+            ScrollHintBox(
+                scrollState = scrollState,
+                modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp),
+            ) {
+            Column(modifier = Modifier.fillMaxWidth().verticalScroll(scrollState)) {
                 SettingsToggleRow(
                     label = stringResource(R.string.settings_auto_start),
                     checked = autoStartEnabled,
@@ -157,6 +166,7 @@ fun SettingsDialog(
                     )
                 }
             }
+            } // ScrollHintBox
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {

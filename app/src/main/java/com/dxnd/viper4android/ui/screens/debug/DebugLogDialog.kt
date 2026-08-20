@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import com.dxnd.viper4android.ui.components.ScrollHintBox
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -107,21 +108,23 @@ fun DebugLogDialog(
                         modifier = Modifier.padding(bottom = 4.dp),
                     )
 
-                    LazyColumn(
-                        state = listState,
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .height(listHeight),
+                    ScrollHintBox(
+                        listState = listState,
+                        modifier = Modifier.fillMaxWidth().height(listHeight),
                     ) {
-                        items(filteredEntries) { entry ->
-                            Text(
-                                text = entry.raw,
-                                fontFamily = FontFamily.Monospace,
-                                fontSize = 10.sp,
-                                color = colorForEntry(entry),
-                                modifier = Modifier.padding(vertical = 1.dp),
-                            )
+                        LazyColumn(
+                            state = listState,
+                            modifier = Modifier.fillMaxWidth().height(listHeight),
+                        ) {
+                            items(filteredEntries) { entry ->
+                                Text(
+                                    text = entry.raw,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontSize = 10.sp,
+                                    color = colorForEntry(entry),
+                                    modifier = Modifier.padding(vertical = 1.dp),
+                                )
+                            }
                         }
                     }
                 }

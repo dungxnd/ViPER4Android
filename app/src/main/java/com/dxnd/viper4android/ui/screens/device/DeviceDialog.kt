@@ -14,7 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import com.dxnd.viper4android.ui.components.ScrollHintBox
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
@@ -269,6 +272,7 @@ private fun DeviceListView(
     devices: List<DeviceSettings>,
     activeDeviceId: String,
     onSelect: (DeviceSettings) -> Unit,
+    listState: LazyListState = rememberLazyListState(),
 ) {
     if (devices.isEmpty()) {
         Box(
@@ -295,7 +299,8 @@ private fun DeviceListView(
             )
         }
 
-    LazyColumn {
+    ScrollHintBox(listState = listState, modifier = Modifier.fillMaxWidth()) {
+    LazyColumn(state = listState) {
         items(sorted, key = { it.deviceId }) { device ->
             val isActive = device.deviceId == activeDeviceId
             Row(
@@ -349,6 +354,7 @@ private fun DeviceListView(
             HorizontalDivider()
         }
     }
+    } // ScrollHintBox
 }
 
 private val BUILTIN_DEVICE_IDS = setOf("speaker", "wired_headphone")

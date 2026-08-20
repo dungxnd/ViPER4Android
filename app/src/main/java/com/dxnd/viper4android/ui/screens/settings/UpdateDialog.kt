@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import com.dxnd.viper4android.ui.components.ScrollHintBox
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
@@ -105,11 +106,15 @@ fun UpdateDialog(
 
                 // Changelog scroll area
                 if (changelogSections.isNotEmpty()) {
+                    val changelogScrollState = rememberScrollState()
+                    ScrollHintBox(
+                        scrollState = changelogScrollState,
+                        modifier = Modifier.fillMaxWidth().heightIn(max = 280.dp),
+                    ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .heightIn(max = 280.dp)
-                            .verticalScroll(rememberScrollState()),
+                            .verticalScroll(changelogScrollState),
                     ) {
                         changelogSections.forEachIndexed { idx, (version, blocks) ->
                             if (changelogSections.size > 1) {
@@ -143,6 +148,7 @@ fun UpdateDialog(
                             }
                         }
                     }
+                    } // ScrollHintBox
                 }
 
                 if (downloading) {
