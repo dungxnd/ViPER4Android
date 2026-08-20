@@ -7,13 +7,16 @@
 > 
 > This fork mission is to embrace progression: utilizing LLM, modernizing the UX and compability for our next-level [DSP backend](https://github.com/dungxnd/ViPERDSP). We build for the future, not the past.
 
-## What this fork has over the old stubborn repo
+## What this fork  (app, driver, DSP) has over the old stubborn repo
 
-- Progressing in the era of AI. No refusal to the future of development and user experience. 
-- Modern implementation of Tube Simulation with more tube types, more dynamic behavior.
-- Fixed wrongly active output speaker detected.
-- Better user experience.
-- Use modern rewrote DSP driver to prevent memory leaks.
+**Progressing in the era of AI. No refusal to the future of development and user experience.**
+- Modern implementation of Tube Simulation with more tube types, more dynamic behavior. *Detail at [DSP#1](https://github.com/dungxnd/ViPERDSP/pull/1), [DSP#2](https://github.com/dungxnd/ViPERDSP/pull/2)*
+- Fixed faulty bass effects, also made it better and more accurate. *Detail at [DSP#6](https://github.com/dungxnd/ViPERDSP/pull/6)*
+- Rewrote FET Compressor internals for cleaner, punchier audio with no buzzing, pumping, or zipper noise. *Detail at [DSP#4](https://github.com/dungxnd/ViPERDSP/pull/4)*
+- Fixed wrongly active output speaker detected. *Detail at [App#7](https://github.com/dungxnd/ViPER4Android-Frontier/pull/7)*
+- Better app experience (UI/UX). 
+- Rewrote DSP driver (with modern C++23/C++26) to prevent memory leaks. *Detail at [DSP#5](https://github.com/dungxnd/ViPERDSP/pull/5)*
+- Driver module auto detect and install correct device's HAL (AIDL / HIDL).
 - Many more fixes/improvements.
 
 (You must [new driver](https://github.com/dungxnd/ViPERFX_RE/releases) for this app.)
