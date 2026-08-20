@@ -17,6 +17,7 @@
 - Better app experience (UI/UX). 
 - Rewrote DSP driver (with modern C++23/C++26) to prevent memory leaks. *Detail at [DSP#5](https://github.com/dungxnd/ViPERDSP/pull/5)*
 - Driver module auto detect and install correct device's HAL (AIDL / HIDL).
+- Added Android Auto wired mode. (App#e1541a2)[https://github.com/dungxnd/ViPER4Android-Frontier/commit/e1541a25708fc7d898164a8570ee16e8d84f0dc2]
 - Many more fixes/improvements.
 
 (You must [new driver](https://github.com/dungxnd/ViPERFX_RE/releases) for this app.)
