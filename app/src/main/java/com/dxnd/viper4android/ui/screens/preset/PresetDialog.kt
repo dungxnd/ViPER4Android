@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import com.dxnd.viper4android.ui.components.ScrollHintBox
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -263,7 +265,13 @@ fun PresetDialog(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 } else {
+                    val presetListState = rememberLazyListState()
+                    ScrollHintBox(
+                        listState = presetListState,
+                        modifier = Modifier.heightIn(max = 300.dp),
+                    ) {
                     LazyColumn(
+                        state = presetListState,
                         modifier = Modifier.heightIn(max = 300.dp),
                     ) {
                         items(presets, key = { it.id }) { preset ->
@@ -289,6 +297,7 @@ fun PresetDialog(
                             HorizontalDivider()
                         }
                     }
+                    } // ScrollHintBox
                 }
             }
         },

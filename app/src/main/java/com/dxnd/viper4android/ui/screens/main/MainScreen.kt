@@ -25,6 +25,8 @@ import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SpeakerGroup
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -246,6 +248,7 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
     updateState.release?.let { release ->
         UpdateDialog(
             release = release,
+            newerReleases = updateState.newerReleases,
             currentVersion = appVersionName,
             upToDate = updateState.upToDate,
             downloading = updateState.downloading,
@@ -324,10 +327,18 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
                         )
                     }
                     IconButton(onClick = { showSettingsDialog = true }) {
-                        Icon(
-                            Icons.Default.Settings,
-                            contentDescription = stringResource(R.string.menu_settings),
-                        )
+                        BadgedBox(
+                            badge = {
+                                if (updateState.newerReleases.isNotEmpty()) {
+                                    Badge()
+                                }
+                            },
+                        ) {
+                            Icon(
+                                Icons.Default.Settings,
+                                contentDescription = stringResource(R.string.menu_settings),
+                            )
+                        }
                     }
                 },
             )
