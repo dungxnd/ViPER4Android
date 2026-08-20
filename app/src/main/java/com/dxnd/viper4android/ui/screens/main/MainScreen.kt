@@ -246,6 +246,7 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
     updateState.release?.let { release ->
         UpdateDialog(
             release = release,
+            newerReleases = updateState.newerReleases,
             currentVersion = appVersionName,
             upToDate = updateState.upToDate,
             downloading = updateState.downloading,

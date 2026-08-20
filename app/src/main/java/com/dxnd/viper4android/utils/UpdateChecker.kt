@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import javax.inject.Inject
@@ -24,8 +25,9 @@ data class ReleaseInfo(
 )
 
 sealed interface UpdateResult {
+    /** One or more releases newer than current, ordered newest-first. */
     data class Available(
-        val release: ReleaseInfo,
+        val releases: List<ReleaseInfo>,
     ) : UpdateResult
 
     data class UpToDate(
@@ -48,19 +50,22 @@ class UpdateChecker
             private const val TAG = "UpdateChecker"
             private const val OWNER = "dungxnd"
             private const val REPO = "ViPER4Android"
-            private const val LATEST_RELEASE_URL =
-                "https://api.github.com/repos/$OWNER/$REPO/releases/latest"
+            private const val RELEASES_URL =
+                "https://api.github.com/repos/$OWNER/$REPO/releases?per_page=20"
         }
 
+        /** Fetches all releases and returns those newer than [currentVersion], newest-first. */
         suspend fun check(currentVersion: String): UpdateResult =
             withContext(Dispatchers.IO) {
                 try {
-                    val json = fetchLatestRelease()
-                    val release = parseRelease(json)
-                    if (isNewer(currentVersion, release.tagName)) {
-                        UpdateResult.Available(release)
+                    val allReleases = fetchAllReleases()
+                    val newer = allReleases.filter { isNewer(currentVersion, it.tagName) }
+                    if (newer.isNotEmpty()) {
+                        UpdateResult.Available(newer)
                     } else {
-                        UpdateResult.UpToDate(release)
+                        val latest = allReleases.firstOrNull()
+                            ?: throw IllegalStateException("No releases found")
+                        UpdateResult.UpToDate(latest)
                     }
                 } catch (e: Exception) {
                     FileLogger.e(TAG, "Update check failed", e)
@@ -68,50 +73,36 @@ class UpdateChecker
                 }
             }
 
-        private fun fetchLatestRelease(): String {
+        private fun fetchAllReleases(): List<ReleaseInfo> {
             val request =
                 Request
                     .Builder()
-                    .url(LATEST_RELEASE_URL)
+                    .url(RELEASES_URL)
                     .header("Accept", "application/vnd.github+json")
                     .build()
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
                     throw IllegalStateException("HTTP ${response.code}")
                 }
-                return response.body.string()
+                val body = response.body.string()
+                val array = JSONArray(body)
+                return (0 until array.length()).map { parseRelease(array.getJSONObject(it).toString()) }
             }
         }
 
         private fun parseRelease(raw: String): ReleaseInfo {
             val obj = JSONObject(raw)
             val assets = obj.optJSONArray("assets")
-            val isDebugBuild = com.dxnd.viper4android.BuildConfig.DEBUG
-            var targetApkUrl: String? = null
-            var targetApkName: String? = null
-            var fallbackApkUrl: String? = null
-            var fallbackApkName: String? = null
-
+            var apkUrl: String? = null
+            var apkName: String? = null
             if (assets != null) {
                 for (i in 0 until assets.length()) {
                     val asset = assets.getJSONObject(i)
                     val name = asset.optString("name")
-                    if (!name.endsWith(".apk", ignoreCase = true)) continue
-
-                    val isDebugAsset = name.contains("-debug", ignoreCase = true)
-                    val downloadUrl = asset.optString("browser_download_url")
-
-                    if (isDebugBuild && isDebugAsset) {
-                        targetApkUrl = downloadUrl
-                        targetApkName = name
+                    if (name.endsWith(".apk", ignoreCase = true)) {
+                        apkUrl = asset.optString("browser_download_url")
+                        apkName = name
                         break
-                    } else if (!isDebugBuild && !isDebugAsset) {
-                        targetApkUrl = downloadUrl
-                        targetApkName = name
-                        break
-                    } else if (fallbackApkUrl == null) {
-                        fallbackApkUrl = downloadUrl
-                        fallbackApkName = name
                     }
                 }
             }
@@ -120,8 +111,8 @@ class UpdateChecker
                 name = obj.optString("name").ifBlank { obj.optString("tag_name") },
                 body = obj.optString("body"),
                 htmlUrl = obj.optString("html_url"),
-                apkUrl = targetApkUrl ?: fallbackApkUrl,
-                apkName = targetApkName ?: fallbackApkName,
+                apkUrl = apkUrl,
+                apkName = apkName,
             )
         }
 

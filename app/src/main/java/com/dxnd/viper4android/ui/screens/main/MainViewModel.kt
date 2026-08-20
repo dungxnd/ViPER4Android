@@ -85,7 +85,10 @@ data class UpdateState(
     val checking: Boolean = false,
     val downloading: Boolean = false,
     val downloadProgress: Int = 0,
+    /** Newest release (for download / "View on GitHub"). Non-null means dialog is open. */
     val release: ReleaseInfo? = null,
+    /** All releases newer than current, newest-first. Empty when up-to-date. */
+    val newerReleases: List<ReleaseInfo> = emptyList(),
     val upToDate: Boolean = false,
     val error: String? = null,
 )
@@ -999,7 +1002,10 @@ class MainViewModel
             viewModelScope.launch {
                 when (val result = updateChecker.check(current)) {
                     is UpdateResult.Available -> {
-                        updateState.value = UpdateState(release = result.release)
+                        updateState.value = UpdateState(
+                            release = result.releases.first(),
+                            newerReleases = result.releases,
+                        )
                     }
 
                     is UpdateResult.UpToDate -> {
