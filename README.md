@@ -14,6 +14,7 @@
 - Fixed faulty bass effects, also made it better and more accurate. *Detail at [DSP#6](https://github.com/dungxnd/ViPERDSP/pull/6)*
 - Rewrote FET Compressor internals for cleaner, punchier audio with no buzzing, pumping, or zipper noise. *Detail at [DSP#4](https://github.com/dungxnd/ViPERDSP/pull/4)*
 - Fixed wrongly active output speaker detected. *Detail at [App#7](https://github.com/dungxnd/ViPER4Android-Frontier/pull/7)*
+- Fixed/Improved CPU hungry Dynamic EQ & LUFS Targeting. *Detail at [DSP#11](https://github.com/dungxnd/ViPERDSP/pull/11)*
 - Better app experience (UI/UX). 
 - Rewrote DSP driver (with modern C++23/C++26) to prevent memory leaks. *Detail at [DSP#5](https://github.com/dungxnd/ViPERDSP/pull/5)*
 - Driver module auto detect and install correct device's HAL (AIDL / HIDL).
